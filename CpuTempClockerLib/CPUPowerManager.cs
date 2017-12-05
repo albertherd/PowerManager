@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CpuTempClockerLib.Enums;
+using System;
 
 namespace CpuTempClockerLib
 {
@@ -13,7 +10,7 @@ namespace CpuTempClockerLib
 
         public uint ERROR_SUCCESS;
 
-        public bool SetCpuProcessorClockPercentage(int percentage)
+        public bool SetCpuProcessorClockPercentage(PowerWriteType powerTypeFlags, int percentage)
         {
             if (percentage <= 0 || percentage > 100)
                 throw new ArgumentException(nameof(percentage));
@@ -23,8 +20,13 @@ namespace CpuTempClockerLib
             if(PowrProfNative.PowerGetActiveScheme(IntPtr.Zero, ref ptrActiveSchemeGuid) != ERROR_SUCCESS)
                 return false;
 
-            if(PowrProfNative.PowerWriteACValueIndex(IntPtr.Zero, ptrActiveSchemeGuid, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS 
-                || PowrProfNative.PowerWriteDCValueIndex(IntPtr.Zero, ptrActiveSchemeGuid, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS)
+            if(powerTypeFlags.HasFlag(PowerWriteType.AC) &&  PowrProfNative.PowerWriteACValueIndex(IntPtr.Zero, ptrActiveSchemeGuid, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS)
+            {
+                PowrProfNative.LocalFree(ptrActiveSchemeGuid);
+                return false;
+            }
+
+            if (powerTypeFlags.HasFlag(PowerWriteType.DC) && PowrProfNative.PowerWriteDCValueIndex(IntPtr.Zero, ptrActiveSchemeGuid, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS)
             {
                 PowrProfNative.LocalFree(ptrActiveSchemeGuid);
                 return false;
@@ -33,7 +35,6 @@ namespace CpuTempClockerLib
             bool result = PowrProfNative.PowerSetActiveScheme(IntPtr.Zero, ptrActiveSchemeGuid) == ERROR_SUCCESS;
             PowrProfNative.LocalFree(ptrActiveSchemeGuid);
             return result;
-        }
-    
+        }    
     }
 }

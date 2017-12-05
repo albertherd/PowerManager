@@ -1,16 +1,18 @@
-﻿using System;
+﻿using CpuTempClockerLib.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CpuTempClockerLib
+namespace CpuTempClockerLib.Models
 {
-    class CPUReading
+    public class CPUReading
     {
-        private int processorState;
+        public float Temperature { get; set; }
+        public TemperatureFluctuationType TemperatureFluctuationType { get; set;}
 
-        public float Temperature;
+        private int processorState = 100;
         public int ProcessorState
         {
             get => processorState;
@@ -29,11 +31,6 @@ namespace CpuTempClockerLib
                     processorState = value;
                 }
             }
-        }
-
-        public CPUReading()
-        {
-            ProcessorState = 100;
         }
     }
 }

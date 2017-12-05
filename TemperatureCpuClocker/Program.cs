@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using OpenHardwareMonitor.Hardware;
+﻿using System.Threading;
+using CpuTempClockerLib.Models;
+using CpuTempClockerLib.Enums;
+using System;
 
 namespace CpuTempClockerLib
 {
@@ -12,12 +9,12 @@ namespace CpuTempClockerLib
     {
         static void Main(string[] args)
         {
-            CPUClockOrchestrator clockOrchestrator = 
-                new CPUClockOrchestrator(new CPUThermalManager(), new CPUPowerManager());
+            CPUClockOrchestrator clockOrchestrator = new CPUClockOrchestrator(new CpuOrchestratorSettings { PowerWriteType = PowerWriteType.AC | PowerWriteType.DC, TargetCPUTemperature = 48 });
 
             while (true)
             {
-                clockOrchestrator.DoCycle();
+                CPUReading reading = clockOrchestrator.DoCycle();
+                Console.WriteLine($"Temp: {reading.Temperature}, Change: {reading.TemperatureFluctuationType}, Percentage: {reading.ProcessorState}");
                 Thread.Sleep(250);
             }
         }

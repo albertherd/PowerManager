@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CpuTempClockerLib.Models;
+using CpuTempClockerLib.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,55 +10,75 @@ namespace CpuTempClockerLib
 {
     public class CPUClockOrchestrator
     {
-        private const float TargetTemperature = 48;
-
         private const int PowerManagementIncrements = 5;
 
-        private CPUThermalManager _thermalManager;
-        private CPUPowerManager _powerManager;
+        private float TargetTemperature = 50;
+        private PowerWriteType PowerWriteType = PowerWriteType.AC | PowerWriteType.DC;
+
+        private CPUThermalManager _thermalManager = new CPUThermalManager();
+        private CPUPowerManager _powerManager = new CPUPowerManager();
         private CPUReading _previousReading = new CPUReading();
         private CPUReading _currentReading = new CPUReading();
 
-        public CPUClockOrchestrator(CPUThermalManager thermalManager, CPUPowerManager powerManager)
+
+        public CPUClockOrchestrator(CpuOrchestratorSettings cpuOrchestratorSettings)
         {
-            _thermalManager = thermalManager;
-            _powerManager = powerManager;
+            if (cpuOrchestratorSettings == null)
+                throw new ArgumentException(nameof(cpuOrchestratorSettings));
+
+            TargetTemperature = cpuOrchestratorSettings.TargetCPUTemperature;
+            PowerWriteType = cpuOrchestratorSettings.PowerWriteType;
         }
 
-        public void DoCycle()
+        public CPUReading DoCycle()
         {
-            SetCurrentCpuReading();
-            CalculateNextCpuPowerTarget();
-            if (_currentReading.Temperature != _previousReading.Temperature)
-            {
-                _powerManager.SetCpuProcessorClockPercentage(_currentReading.ProcessorState);
-                Console.WriteLine($"{_currentReading.Temperature}");
-            }
-            SetPreviousCpuReading();
+            SetCurrentCPUReadings();
+            UpdateCPUClock();
+            SetPreviousCPUReading();
+            return _currentReading;
         }
 
-        private void SetCurrentCpuReading()
+        private void SetPreviousCPUReading()
+        {
+            _previousReading.ProcessorState = _currentReading.ProcessorState;
+            _previousReading.Temperature = _currentReading.Temperature;
+            _previousReading.TemperatureFluctuationType = _currentReading.TemperatureFluctuationType;
+        }
+
+        private void UpdateCPUClock()
+        {
+            if (_currentReading.TemperatureFluctuationType == TemperatureFluctuationType.None)
+                return;
+            
+            _powerManager.SetCpuProcessorClockPercentage(PowerWriteType, _currentReading.ProcessorState);            
+        }
+
+        private void SetCurrentCPUReadings()
         {
             float? temperature = _thermalManager.GetTemperature();
             if (temperature.HasValue)
                 _currentReading.Temperature = temperature.Value;
-        }
 
-        private void SetPreviousCpuReading()
-        {
-            _previousReading.ProcessorState = _currentReading.ProcessorState;
-            _previousReading.Temperature = _currentReading.Temperature;
-        }
-
-        private void CalculateNextCpuPowerTarget()
-        {
-            if(_currentReading.Temperature < TargetTemperature)
+            if (_currentReading.Temperature < TargetTemperature)
             {
                 _currentReading.ProcessorState += PowerManagementIncrements;
             }
             else if(_currentReading.Temperature > TargetTemperature)
             {
                 _currentReading.ProcessorState -= PowerManagementIncrements;
+            }
+
+            if(_currentReading.Temperature > _previousReading.Temperature)
+            {
+                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Increased;
+            }
+            else if(_currentReading.Temperature < _previousReading.Temperature)
+            {
+                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Decreased;
+            }
+            else
+            {
+                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.None;
             }
         }
     }

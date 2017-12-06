@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CpuTempClockerLib
 {
-    public class CPUClockOrchestrator
+    public class CPUClockOrchestrator : IDisposable
     {
         private const int ProcessorStateIncrementsWhenNoFluctuation = 5; 
 

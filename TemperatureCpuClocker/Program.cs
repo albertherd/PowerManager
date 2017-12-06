@@ -15,7 +15,7 @@ namespace CpuTempClockerLib
             {
                 CPUReading reading = clockOrchestrator.DoCycle();
                 Console.WriteLine($"Temp: {reading.Temperature}, Change: {reading.TemperatureFluctuationType}, Percentage: {reading.ProcessorState}");
-                Thread.Sleep(250);
+                Thread.Sleep(25);
             }
         }
     }

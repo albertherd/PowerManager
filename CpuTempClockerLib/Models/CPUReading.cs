@@ -11,7 +11,7 @@ namespace CpuTempClockerLib.Models
     {
         public float Temperature { get; set; }
         public TemperatureFluctuationType TemperatureFluctuationType { get; set;}
-
+        
         private int processorState = 100;
         public int ProcessorState
         {

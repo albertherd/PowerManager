@@ -4,3 +4,4 @@ C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuCloc
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.csproj.CoreCompileInputs.cache
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.dll
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.pdb
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.csprojResolveAssemblyReference.cache

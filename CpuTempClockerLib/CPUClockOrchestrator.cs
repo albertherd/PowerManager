@@ -10,9 +10,9 @@ namespace CpuTempClockerLib
 {
     public class CPUClockOrchestrator
     {
-        private const int PowerManagementIncrements = 5;
+        private const int ProcessorStateIncrementsWhenNoFluctuation = 5; 
 
-        private float TargetTemperature = 50;
+        private float TargetTemperature = 30;
         private PowerWriteType PowerWriteType = PowerWriteType.AC | PowerWriteType.DC;
 
         private CPUThermalManager _thermalManager = new CPUThermalManager();
@@ -55,24 +55,41 @@ namespace CpuTempClockerLib
 
         private void SetCurrentCPUReadings()
         {
+            SetCurrentTemperature();
+            SetCurrentProcessorState();
+            SetCurrentTemperatureFluctuationType();
+        }
+
+        private void SetCurrentTemperature()
+        {
             float? temperature = _thermalManager.GetTemperature();
             if (temperature.HasValue)
                 _currentReading.Temperature = temperature.Value;
+        }
 
-            if (_currentReading.Temperature < TargetTemperature)
-            {
-                _currentReading.ProcessorState += PowerManagementIncrements;
-            }
-            else if(_currentReading.Temperature > TargetTemperature)
-            {
-                _currentReading.ProcessorState -= PowerManagementIncrements;
-            }
+        private void SetCurrentProcessorState()
+        {
+            int temperturePercentageDelta = GetTemperatureDeltaPercentage();
+            _currentReading.ProcessorState += temperturePercentageDelta;
+        }
 
-            if(_currentReading.Temperature > _previousReading.Temperature)
+        private int GetTemperatureDeltaPercentage()
+        {
+            if(_currentReading.TemperatureFluctuationType == TemperatureFluctuationType.None && _currentReading.Temperature < TargetTemperature)
+            {
+                return ProcessorStateIncrementsWhenNoFluctuation;
+            }            
+            float temperatureDelta = TargetTemperature - _currentReading.Temperature;
+            return (int)((temperatureDelta * 100) / TargetTemperature);
+        }
+
+        private void SetCurrentTemperatureFluctuationType()
+        {
+            if (_currentReading.Temperature > _previousReading.Temperature)
             {
                 _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Increased;
             }
-            else if(_currentReading.Temperature < _previousReading.Temperature)
+            else if (_currentReading.Temperature < _previousReading.Temperature)
             {
                 _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Decreased;
             }

@@ -4,7 +4,7 @@ namespace CpuTempClockerLib.Models
 {
     public class CpuOrchestratorSettings
     {
-        public float TargetCPUTemperature { get; set; }
+        public int TargetCPUTemperature { get; set; }
         public PowerWriteType PowerWriteType { get; set; }
     }
 }

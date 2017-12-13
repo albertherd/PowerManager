@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace CpuTempClockerLib
 {
-    public class CPUClockOrchestrator : IDisposable
+    public class CPUClockOrchestrator
     {
-        private const int ProcessorStateIncrementsWhenNoFluctuation = 5; 
+        private const int ProcessorStateIncrementsWhenNoFluctuation = 5;
 
-        private float TargetTemperature = 30;
-        private PowerWriteType PowerWriteType = PowerWriteType.AC | PowerWriteType.DC;
+        private float TargetTemperature;
+        private PowerType PowerWriteType;
 
         private CPUThermalManager _thermalManager = new CPUThermalManager();
-        private CPUPowerManager _powerManager = new CPUPowerManager();
         private CPUReading _previousReading = new CPUReading();
         private CPUReading _currentReading = new CPUReading();
 
+        private readonly PowerScheme _powerScheme;
 
         public CPUClockOrchestrator(CpuOrchestratorSettings cpuOrchestratorSettings)
         {
@@ -28,6 +28,7 @@ namespace CpuTempClockerLib
 
             TargetTemperature = cpuOrchestratorSettings.TargetCPUTemperature;
             PowerWriteType = cpuOrchestratorSettings.PowerWriteType;
+            _powerScheme = cpuOrchestratorSettings.PowerScheme;
         }
 
         public CPUReading DoCycle()
@@ -42,22 +43,20 @@ namespace CpuTempClockerLib
         {
             _previousReading.ProcessorState = _currentReading.ProcessorState;
             _previousReading.Temperature = _currentReading.Temperature;
-            _previousReading.TemperatureFluctuationType = _currentReading.TemperatureFluctuationType;
         }
 
         private void UpdateCPUClock()
         {
-            if (_currentReading.TemperatureFluctuationType == TemperatureFluctuationType.None)
+            if (_currentReading.Temperature == _previousReading.Temperature)
                 return;
-            
-            _powerManager.SetCpuProcessorClockPercentage(PowerWriteType, _currentReading.ProcessorState);            
+
+            _powerScheme.SetMaxCPUState(PowerWriteType, _currentReading.ProcessorState);
         }
 
         private void SetCurrentCPUReadings()
         {
             SetCurrentTemperature();
             SetCurrentProcessorState();
-            SetCurrentTemperatureFluctuationType();
         }
 
         private void SetCurrentTemperature()
@@ -75,28 +74,8 @@ namespace CpuTempClockerLib
 
         private int GetTemperatureDeltaPercentage()
         {
-            if(_currentReading.TemperatureFluctuationType == TemperatureFluctuationType.None && _currentReading.Temperature < TargetTemperature)
-            {
-                return ProcessorStateIncrementsWhenNoFluctuation;
-            }            
             float temperatureDelta = TargetTemperature - _currentReading.Temperature;
             return (int)((temperatureDelta * 100) / TargetTemperature);
-        }
-
-        private void SetCurrentTemperatureFluctuationType()
-        {
-            if (_currentReading.Temperature > _previousReading.Temperature)
-            {
-                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Increased;
-            }
-            else if (_currentReading.Temperature < _previousReading.Temperature)
-            {
-                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.Decreased;
-            }
-            else
-            {
-                _currentReading.TemperatureFluctuationType = TemperatureFluctuationType.None;
-            }
         }
     }
 }

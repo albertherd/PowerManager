@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace CpuTempClockerLib
 {
-    public static class PowrProfNative
+    public static class PowrProf
     {
         [DllImport("powrprof.dll", SetLastError = true)]
         public static extern UInt32 PowerGetActiveScheme(IntPtr UserRootPowerKey, ref IntPtr ActivePolicyGuid);
+
+        [DllImport("powrprof.dll")]
+        public static extern UInt32 PowerReadFriendlyName(IntPtr UserRootPowerKey, IntPtr SchemeGuid, IntPtr SubGroupOfPowerSettingGuid, IntPtr PowerSettingGuid, IntPtr Buffer, ref int BufferSize);
 
         [DllImport("powrprof.dll", SetLastError = true)]
         public static extern UInt32 PowerWriteACValueIndex(IntPtr HKey, IntPtr SchemeGuid, ref Guid SubGroupOfPowerSettingsGuid, ref Guid PowerSettingGuid, int AcValueIndex);
@@ -21,7 +24,19 @@ namespace CpuTempClockerLib
         [DllImport("powrprof.dll", SetLastError = true)]
         public static extern UInt32 PowerSetActiveScheme(IntPtr UserRootPowerKey, IntPtr SchemeGuid);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr LocalFree(IntPtr hMem);
+        [DllImport("powrprof.dll", SetLastError = true)]
+        public static extern int PowerEnumerate(IntPtr RootPowerKey, IntPtr SchemeGuid, IntPtr SubGroupOfPowerSettingsGuid, PowerDataAccessor AccessFlags, int Index, IntPtr Buffer, ref int BufferSize);
+
+        public enum PowerDataAccessor : uint
+        {
+            ACCESS_AC_POWER_SETTING_INDEX = 0,
+            ACCESS_DC_POWER_SETTING_INDEX = 1,
+            ACCESS_SCHEME = 16,
+            ACCESS_SUBGROUP = 17,
+            ACCESS_INDIVIDUAL_SETTING = 18,
+            ACCESS_ACTIVE_SCHEME = 19,
+            ACCESS_CREATE_SCHEME = 20
+        }
+
     }
 }

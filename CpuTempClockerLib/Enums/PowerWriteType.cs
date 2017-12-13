@@ -3,7 +3,7 @@
 namespace CpuTempClockerLib.Enums
 {
     [Flags]
-    public enum PowerWriteType
+    public enum PowerType
     {
         AC = 1,
         DC = 2

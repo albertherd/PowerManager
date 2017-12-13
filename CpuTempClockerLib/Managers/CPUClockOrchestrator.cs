@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CpuTempClockerLib.Managers;
 
 namespace CpuTempClockerLib
 {
     public class CPUClockOrchestrator
     {
-        private const int ProcessorStateIncrementsWhenNoFluctuation = 5;
-
         private float TargetTemperature;
         private PowerType PowerWriteType;
 
@@ -39,6 +38,14 @@ namespace CpuTempClockerLib
             return _currentReading;
         }
 
+        public CPUReading SetMaxCpuClock(int percentage)
+        {
+            SetCurrentCPUReadings();
+            UpdateCPUClock(percentage);
+            SetPreviousCPUReading();
+            return _currentReading;
+        }
+
         private void SetPreviousCPUReading()
         {
             _previousReading.ProcessorState = _currentReading.ProcessorState;
@@ -51,6 +58,14 @@ namespace CpuTempClockerLib
                 return;
 
             _powerScheme.SetMaxCPUState(PowerWriteType, _currentReading.ProcessorState);
+        }
+
+        private void UpdateCPUClock(int percentage)
+        {
+            if (_currentReading.Temperature == _previousReading.Temperature)
+                return;
+
+            _powerScheme.SetMaxCPUState(PowerWriteType, percentage);
         }
 
         private void SetCurrentCPUReadings()

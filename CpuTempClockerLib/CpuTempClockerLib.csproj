@@ -43,15 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CPUClockOrchestrator.cs" />
+    <Compile Include="Managers\CPUClockOrchestrator.cs" />
     <Compile Include="Native\ReturnCodes.cs" />
     <Compile Include="Native\Sizes.cs" />
-    <Compile Include="PowerSchemesManager.cs" />
+    <Compile Include="Managers\PowerSchemesManager.cs" />
     <Compile Include="Enums\TemperatureFluctuationType.cs" />
     <Compile Include="Models\PowerScheme.cs" />
     <Compile Include="Models\CpuOrchestratorSettings.cs" />
     <Compile Include="Models\CPUReading.cs" />
-    <Compile Include="CPUThermalManager.cs" />
+    <Compile Include="Managers\CPUThermalManager.cs" />
     <Compile Include="Enums\PowerWriteType.cs" />
     <Compile Include="Models\SafeHeapHandle.cs" />
     <Compile Include="Native\Kernel32.cs" />

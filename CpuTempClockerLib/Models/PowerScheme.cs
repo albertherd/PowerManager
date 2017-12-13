@@ -16,7 +16,6 @@ namespace CpuTempClockerLib.Models
 
         private SafeHeapHandle<Guid> _guidHandleSafe;
         private int _lastPercentageSet;
-        public uint ERROR_SUCCESS;
 
         private Guid _guid;
         private string _friendlyName;
@@ -44,13 +43,13 @@ namespace CpuTempClockerLib.Models
 
             IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
 
-            if (powerTypeFlags.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS)
+            if (powerTypeFlags.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
                 return false;
 
-            if (powerTypeFlags.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ERROR_SUCCESS)
+            if (powerTypeFlags.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
                 return false;
 
-            bool result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ERROR_SUCCESS;
+            bool result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
 
             if (result)
                 _lastPercentageSet = percentage;

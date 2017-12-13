@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CpuTempClockerLib.Native;
 
-namespace CpuTempClockerLib
+namespace CpuTempClockerLib.Managers
 {
     public class PowerSchemesManager
     {

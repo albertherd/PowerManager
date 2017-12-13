@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CpuTempClockerLib
+namespace CpuTempClockerLib.Managers
 {
     public class CPUThermalManager
     {
@@ -30,6 +30,17 @@ namespace CpuTempClockerLib
         {
             MainThermalSensor.Hardware.Update();
             return MainThermalSensor.Value;
+        }
+
+        public void SetMainThermalSensor(int sensorId)
+        {
+            if (sensorId < -1)
+                throw new ArgumentException(nameof(sensorId));
+
+            if (sensorId + 1 > ThermalSensors.Count)
+                throw new ArgumentOutOfRangeException(nameof(sensorId));
+
+            MainThermalSensor = ThermalSensors.ElementAt(sensorId);
         }
 
         private void SetMainThermalSensorHeuristically()

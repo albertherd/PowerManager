@@ -14,20 +14,21 @@ namespace CpuTempClockerLib
         private float TargetTemperature;
         private PowerType PowerWriteType;
 
-        private CPUThermalManager _thermalManager = new CPUThermalManager();
-        private CPUReading _previousReading = new CPUReading();
-        private CPUReading _currentReading = new CPUReading();
-
+        private readonly CPUReading _previousReading;
+        private readonly CPUReading _currentReading;
         private readonly PowerScheme _powerScheme;
 
-        public CPUClockOrchestrator(CpuOrchestratorSettings cpuOrchestratorSettings)
+        private CPUSensorCollection _cpuSensors = new CPUSensorCollection();
+
+        public CPUClockOrchestrator(CPUOrchestratorSettings cpuOrchestratorSettings)
         {
-            if (cpuOrchestratorSettings == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings));
+            EnsureCPUOrchestratorSettings(cpuOrchestratorSettings);
 
             TargetTemperature = cpuOrchestratorSettings.TargetCPUTemperature;
             PowerWriteType = cpuOrchestratorSettings.PowerWriteType;
             _powerScheme = cpuOrchestratorSettings.PowerScheme;
+            _previousReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
+            _currentReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
         }
 
         public CPUReading DoCycle()
@@ -38,12 +39,16 @@ namespace CpuTempClockerLib
             return _currentReading;
         }
 
-        public CPUReading SetMaxCpuClock(int percentage)
+        private void EnsureCPUOrchestratorSettings(CPUOrchestratorSettings cpuOrchestratorSettings)
         {
-            SetCurrentCPUReadings();
-            UpdateCPUClock(percentage);
-            SetPreviousCPUReading();
-            return _currentReading;
+            if (cpuOrchestratorSettings == null)
+                throw new ArgumentException(nameof(cpuOrchestratorSettings));
+
+            if (cpuOrchestratorSettings.PowerScheme == null)
+                throw new ArgumentException(nameof(cpuOrchestratorSettings.PowerScheme));
+
+            if (cpuOrchestratorSettings.ProcessorStateSettings == null)
+                throw new ArgumentException(nameof(cpuOrchestratorSettings.ProcessorStateSettings));
         }
 
         private void SetPreviousCPUReading()
@@ -60,14 +65,6 @@ namespace CpuTempClockerLib
             _powerScheme.SetMaxCPUState(PowerWriteType, _currentReading.ProcessorState);
         }
 
-        private void UpdateCPUClock(int percentage)
-        {
-            if (_currentReading.Temperature == _previousReading.Temperature)
-                return;
-
-            _powerScheme.SetMaxCPUState(PowerWriteType, percentage);
-        }
-
         private void SetCurrentCPUReadings()
         {
             SetCurrentTemperature();
@@ -76,7 +73,7 @@ namespace CpuTempClockerLib
 
         private void SetCurrentTemperature()
         {
-            float? temperature = _thermalManager.GetTemperature();
+            float? temperature = _cpuSensors.GetTemperature();
             if (temperature.HasValue)
                 _currentReading.Temperature = temperature.Value;
         }

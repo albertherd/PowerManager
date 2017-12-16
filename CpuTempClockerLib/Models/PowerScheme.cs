@@ -1,11 +1,7 @@
 ﻿using CpuTempClockerLib.Enums;
 using CpuTempClockerLib.Native;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CpuTempClockerLib.Models
 {
@@ -19,22 +15,23 @@ namespace CpuTempClockerLib.Models
 
         private Guid _guid;
         private string _friendlyName;
-        private bool _isActive;
 
         public Guid Guid { get => _guid;}
         public string FriendlyName { get => _friendlyName;}
-        public bool IsActive { get => _isActive; }
+        public bool IsActive { get => IsActiveInternal(); }
 
-        internal PowerScheme(SafeHeapHandle<Guid> schemeGuid, string friendlyName, bool isActive)
+        internal PowerScheme(SafeHeapHandle<Guid> schemeGuid, string friendlyName)
         {
             _guidHandleSafe = schemeGuid;
             _guid = _guidHandleSafe.ToManagedMemory();
             _friendlyName = friendlyName;
-            _isActive = isActive;  
         }
 
         public bool SetMaxCPUState(PowerType powerTypeFlags, int percentage)
         {
+            if (!IsActive)
+                throw new InvalidOperationException("Power scheme must be active before setting the CPU state");
+
             if (percentage <= 0 || percentage > 100)
                 throw new ArgumentException(nameof(percentage));
 
@@ -55,6 +52,19 @@ namespace CpuTempClockerLib.Models
                 _lastPercentageSet = percentage;
 
             return result;
+        }
+
+        private bool IsActiveInternal()
+        {
+            IntPtr ptrActiveSchemeGuid = IntPtr.Zero;
+
+            if (PowrProf.PowerGetActiveScheme(IntPtr.Zero, ref ptrActiveSchemeGuid) != ReturnCodes.ERROR_SUCCESS)
+                throw new COMException("Could not determine the active power scheme");
+
+            SafeHeapHandle<Guid> activeSchemeGuidHandleSafe = new SafeHeapHandle<Guid>(ptrActiveSchemeGuid);
+            bool result = activeSchemeGuidHandleSafe.Equals(_guidHandleSafe);
+            activeSchemeGuidHandleSafe.Close();
+            return result;            
         }
 
         public void Dispose()

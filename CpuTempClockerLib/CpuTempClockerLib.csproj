@@ -44,18 +44,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Managers\CPUClockOrchestrator.cs" />
+    <Compile Include="Managers\CPUSensorsManager.cs" />
+    <Compile Include="Models\CPUSensorCollection.cs" />
+    <Compile Include="Models\ProcessorStateSettings.cs" />
     <Compile Include="Native\ReturnCodes.cs" />
     <Compile Include="Native\Sizes.cs" />
     <Compile Include="Managers\PowerSchemesManager.cs" />
     <Compile Include="Enums\TemperatureFluctuationType.cs" />
     <Compile Include="Models\PowerScheme.cs" />
-    <Compile Include="Models\CpuOrchestratorSettings.cs" />
+    <Compile Include="Models\CPUOrchestratorSettings.cs" />
     <Compile Include="Models\CPUReading.cs" />
-    <Compile Include="Managers\CPUThermalManager.cs" />
     <Compile Include="Enums\PowerWriteType.cs" />
     <Compile Include="Models\SafeHeapHandle.cs" />
     <Compile Include="Native\Kernel32.cs" />
     <Compile Include="Native\PowrProf.cs" />
+    <Compile Include="PowerModes\TemperatureTargetedPowerMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

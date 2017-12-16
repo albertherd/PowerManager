@@ -18,12 +18,10 @@ namespace CpuTempClockerLib.Managers
                 return new List<PowerScheme>(powerSchemes);
 
             List<SafeHeapHandle<Guid>> powerSchemeGuids = GetPowerSchemeGuids();
-            SafeHeapHandle<Guid> activePowerScheme = GetActivePowerSchemeGuid();
 
             foreach(SafeHeapHandle<Guid> guid in powerSchemeGuids)
             {
-                bool isActive = guid.Equals(activePowerScheme);
-                powerSchemes.Add(new PowerScheme(guid, GetSchemeName(guid), guid.Equals(activePowerScheme)));
+                powerSchemes.Add(new PowerScheme(guid, GetSchemeName(guid)));
             }
 
             return powerSchemes;
@@ -53,16 +51,6 @@ namespace CpuTempClockerLib.Managers
             }
 
             return result;
-        }
-
-        private SafeHeapHandle<Guid> GetActivePowerSchemeGuid()
-        {
-            IntPtr ptrActiveSchemeGuid = IntPtr.Zero;
-
-            if (PowrProf.PowerGetActiveScheme(IntPtr.Zero, ref ptrActiveSchemeGuid) != ReturnCodes.ERROR_SUCCESS)
-                throw new COMException("Could not determine the active power scheme");
-
-            return new SafeHeapHandle<Guid>(ptrActiveSchemeGuid);
         }
 
         private string GetSchemeName(SafeHeapHandle<Guid> guid)

@@ -7,32 +7,27 @@ using System.Threading.Tasks;
 
 namespace CpuTempClockerLib.Managers
 {
-    public class CPUThermalManager
+    public class CPUSensorCollection
     {
-        private Computer _computer = new Computer() { CPUEnabled = true };
+        private IHardware _cpuHardware;
         private List<ISensor> _thermalSensors = new List<ISensor>();
 
         public List<ISensor> ThermalSensors => _thermalSensors;
-        public ISensor MainThermalSensor { get; set; }
+        public ISensor PackageSensor { get; set; }
 
-        public CPUThermalManager()
+        internal CPUSensorCollection(IHardware hardware)
         {
-            _computer.Open();
-
-            _thermalSensors = _computer.Hardware
-                .Where(currentHardware => currentHardware.HardwareType == HardwareType.CPU).SelectMany(currentHardware => currentHardware.Sensors)
+            _thermalSensors = hardware.Sensors
                 .Where(currentSensor => currentSensor.SensorType == SensorType.Temperature).ToList();
-        
-            SetMainThermalSensorHeuristically();
         }
 
         public float? GetTemperature()
         {
-            MainThermalSensor.Hardware.Update();
-            return MainThermalSensor.Value;
+            PackageSensor.Hardware.Update();
+            return PackageSensor.Value;
         }
 
-        public void SetMainThermalSensor(int sensorId)
+        public void SetThermalPackageSensor(int sensorId)
         {
             if (sensorId < -1)
                 throw new ArgumentException(nameof(sensorId));
@@ -40,8 +35,9 @@ namespace CpuTempClockerLib.Managers
             if (sensorId + 1 > ThermalSensors.Count)
                 throw new ArgumentOutOfRangeException(nameof(sensorId));
 
-            MainThermalSensor = ThermalSensors.ElementAt(sensorId);
+            PackageSensor = ThermalSensors.ElementAt(sensorId);
         }
+
 
         private void SetMainThermalSensorHeuristically()
         {
@@ -49,26 +45,26 @@ namespace CpuTempClockerLib.Managers
                 return;
 
             List<ISensor> packageSensors = _thermalSensors.Where(sensor => sensor.Name.Contains("Package")).ToList();
-            if(!packageSensors.Any())
+            if (!packageSensors.Any())
             {
-                MainThermalSensor = _thermalSensors.FirstOrDefault();
+                PackageSensor = _thermalSensors.FirstOrDefault();
             }
-            if(packageSensors.Count == 1)
+            if (packageSensors.Count == 1)
             {
-                MainThermalSensor = packageSensors.First();
+                PackageSensor = packageSensors.First();
             }
-            else if(packageSensors.Count > 1)
+            else if (packageSensors.Count > 1)
             {
                 ISensor firstSensor = packageSensors.Where(sensor => sensor.Name.Contains("1")).FirstOrDefault();
-                if(firstSensor != null)
+                if (firstSensor != null)
                 {
-                    MainThermalSensor = firstSensor;
+                    PackageSensor = firstSensor;
                 }
                 else
                 {
-                    MainThermalSensor = packageSensors.FirstOrDefault();
+                    PackageSensor = packageSensors.FirstOrDefault();
                 }
-            }            
+            }
         }
     }
 }

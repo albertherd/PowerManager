@@ -3,6 +3,7 @@ using System.Threading;
 using CpuTempClockerLib.Models;
 using CpuTempClockerLib.Enums;
 using System;
+using CpuTempClockerLib.Managers;
 
 namespace CpuTempClockerLib
 {
@@ -10,7 +11,7 @@ namespace CpuTempClockerLib
     {
         static void Main(string[] args)
         {
-            CPUClockOrchestrator clockOrchestrator = new CPUClockOrchestrator(new CpuOrchestratorSettings {
+            CPUClockOrchestrator clockOrchestrator = new CPUClockOrchestrator(new CPUOrchestratorSettings {
                 PowerWriteType = PowerType.AC | PowerType.DC,
                 TargetCPUTemperature = 48,
                 PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive).SingleOrDefault()

@@ -11,9 +11,11 @@ namespace CpuTempClockerLib
     {
         static void Main(string[] args)
         {
-            CPUClockOrchestrator clockOrchestrator = new CPUClockOrchestrator(new CPUOrchestratorSettings {
+            CPUClockOrchestrator clockOrchestrator = new CPUClockOrchestrator(new CPUOrchestratorSettings
+            {
                 PowerWriteType = PowerType.AC | PowerType.DC,
                 TargetCPUTemperature = 48,
+                ProcessorStateSettings = new ProcessorStateSettings(40, 100),
                 PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive).SingleOrDefault()
             });
 

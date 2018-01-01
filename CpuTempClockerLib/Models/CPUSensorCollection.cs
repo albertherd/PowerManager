@@ -9,7 +9,6 @@ namespace CpuTempClockerLib.Managers
 {
     public class CPUSensorCollection
     {
-        private IHardware _cpuHardware;
         private List<ISensor> _thermalSensors = new List<ISensor>();
 
         public List<ISensor> ThermalSensors => _thermalSensors;

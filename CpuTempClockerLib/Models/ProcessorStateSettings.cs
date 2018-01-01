@@ -13,14 +13,15 @@ namespace CpuTempClockerLib.Models
 
         public ProcessorStateSettings(int minimumProcessorState, int maximumProcessorState)
         {
-            if (minimumProcessorState < 0)
+            if (minimumProcessorState < 0 || minimumProcessorState > 100)
                 throw new ArgumentException(nameof(minimumProcessorState));
 
-            if (maximumProcessorState > 100)
+            if (maximumProcessorState < 0 || maximumProcessorState > 100)
                 throw new ArgumentException(nameof(maximumProcessorState));
 
             MinimumProcessorState = minimumProcessorState;
             MaximumProcessorState = maximumProcessorState;
         }
+
     }
 }

@@ -7,7 +7,7 @@ namespace CpuTempClockerLib.Models
 {
     public class PowerScheme : IDisposable
     {
-        private static Guid GUID_PROCESSOR_SETTINGS_SUBGROUP = Guid.Parse("54533251-82be-4824-96c1-47b60b740d00");
+        private static Guid GUID_PROCESSOR_SETTINGS_SUBGROUP = Guid.Parse("54533251-82BE-4824-96C1-47B60B740D00");
         private static Guid GUID_PROCESSOR_THROTTLE_MAXIMUM = Guid.Parse("BC5038F7-23E0-4960-96DA-33ABAF5935EC");
 
         private SafeHeapHandle<Guid> _guidHandleSafe;
@@ -18,7 +18,6 @@ namespace CpuTempClockerLib.Models
 
         public Guid Guid { get => _guid;}
         public string FriendlyName { get => _friendlyName;}
-        public bool IsActive { get => IsActiveInternal(); }
 
         internal PowerScheme(SafeHeapHandle<Guid> schemeGuid, string friendlyName)
         {
@@ -29,9 +28,6 @@ namespace CpuTempClockerLib.Models
 
         public bool SetMaxCPUState(PowerType powerTypeFlags, int percentage)
         {
-            if (!IsActive)
-                throw new InvalidOperationException("Power scheme must be active before setting the CPU state");
-
             if (percentage <= 0 || percentage > 100)
                 throw new ArgumentException(nameof(percentage));
 
@@ -54,7 +50,7 @@ namespace CpuTempClockerLib.Models
             return result;
         }
 
-        private bool IsActiveInternal()
+        public bool IsActive()
         {
             IntPtr ptrActiveSchemeGuid = IntPtr.Zero;
 

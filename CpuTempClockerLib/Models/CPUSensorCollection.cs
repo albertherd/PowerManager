@@ -38,7 +38,6 @@ namespace CpuTempClockerLib.Managers
             PackageSensor = ThermalSensors.ElementAt(sensorId);
         }
 
-
         private void SetMainThermalSensorHeuristically()
         {
             if (_thermalSensors == null || !_thermalSensors.Any())

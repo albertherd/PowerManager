@@ -1,4 +1,5 @@
 ﻿using CpuTempClockerLib.Enums;
+using CpuTempClockerLib.Managers;
 
 namespace CpuTempClockerLib.Models
 {
@@ -8,5 +9,6 @@ namespace CpuTempClockerLib.Models
         public PowerType PowerWriteType { get; set; }
         public PowerScheme PowerScheme { get; set; }
         public ProcessorStateSettings ProcessorStateSettings { get; set; }
+        public CPUSensorCollection CPUSensorCollection { get; set; }
     }
 }

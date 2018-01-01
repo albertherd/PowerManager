@@ -1,10 +1,6 @@
 ﻿using CpuTempClockerLib.Models;
 using CpuTempClockerLib.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CpuTempClockerLib.Managers;
 
 namespace CpuTempClockerLib
@@ -17,8 +13,7 @@ namespace CpuTempClockerLib
         private readonly CPUReading _previousReading;
         private readonly CPUReading _currentReading;
         private readonly PowerScheme _powerScheme;
-
-        private CPUSensorCollection _cpuSensors = new CPUSensorCollection();
+        private readonly CPUSensorCollection _cpuSensors;
 
         public CPUClockOrchestrator(CPUOrchestratorSettings cpuOrchestratorSettings)
         {
@@ -29,6 +24,7 @@ namespace CpuTempClockerLib
             _powerScheme = cpuOrchestratorSettings.PowerScheme;
             _previousReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
             _currentReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
+            _cpuSensors = cpuOrchestratorSettings.SensorCollection;
         }
 
         public CPUReading DoCycle()

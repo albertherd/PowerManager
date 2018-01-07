@@ -18,16 +18,16 @@ namespace CpuTempClockerLib
         private readonly PowerScheme _powerScheme;
         private readonly CPUSensorCollection _sensorCollection;
 
-        public TemperatureTargetedPowerMode(CPUOrchestratorSettings cpuOrchestratorSettings)
+        public TemperatureTargetedPowerMode(TemperatureTargetedPowerModeSettings cpuOrchestratorSettings)
         {
-            EnsureCPUOrchestratorSettings(cpuOrchestratorSettings);
+            EnsureSettings(cpuOrchestratorSettings);
 
             TargetTemperature = cpuOrchestratorSettings.TargetCPUTemperature;
             PowerWriteType = cpuOrchestratorSettings.PowerWriteType;
             _powerScheme = cpuOrchestratorSettings.PowerScheme;
             _previousReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
             _currentReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
-            _sensorCollection = cpuOrchestratorSettings.CPUSensorCollection;
+            _sensorCollection = cpuOrchestratorSettings.SensorCollection;
         }
 
         public CPUReading DoCycle()
@@ -38,7 +38,7 @@ namespace CpuTempClockerLib
             return _currentReading;
         }         
 
-        private void EnsureCPUOrchestratorSettings(CPUOrchestratorSettings cpuOrchestratorSettings)
+        private void EnsureSettings(TemperatureTargetedPowerModeSettings cpuOrchestratorSettings)
         {
             if (cpuOrchestratorSettings == null)
                 throw new ArgumentException(nameof(cpuOrchestratorSettings));
@@ -49,8 +49,8 @@ namespace CpuTempClockerLib
             if (cpuOrchestratorSettings.ProcessorStateSettings == null)
                 throw new ArgumentException(nameof(cpuOrchestratorSettings.ProcessorStateSettings));
 
-            if (cpuOrchestratorSettings.CPUSensorCollection == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings.CPUSensorCollection));            
+            if (cpuOrchestratorSettings.SensorCollection == null)
+                throw new ArgumentException(nameof(cpuOrchestratorSettings.SensorCollection));            
         }
 
         private void SetPreviousCPUReading()

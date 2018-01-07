@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ProgramArgs.cs" />
     <Compile Include="PowerModes\TemperatureTargetedPowerMode.cs" />
     <Compile Include="Managers\CPUSensorsManager.cs" />
     <Compile Include="Models\CPUSensorCollection.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="Managers\PowerSchemesManager.cs" />
     <Compile Include="Enums\TemperatureFluctuationType.cs" />
     <Compile Include="Models\PowerScheme.cs" />
-    <Compile Include="Models\CPUOrchestratorSettings.cs" />
+    <Compile Include="Models\TemperatureTargetedPowerModeSettings.cs" />
     <Compile Include="Models\CPUReading.cs" />
     <Compile Include="Enums\PowerWriteType.cs" />
     <Compile Include="Models\SafeHeapHandle.cs" />

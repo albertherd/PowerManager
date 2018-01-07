@@ -14,7 +14,7 @@ namespace CpuTempClockerLib.Managers
 
         public IEnumerable<CPUSensorCollection> GetCPUSensors()
         {
-            if (_cpuSensorsCollection != null)
+            if (_cpuSensorsCollection != null && _cpuSensorsCollection.Any())
                 return new List<CPUSensorCollection>(_cpuSensorsCollection);
 
             IEnumerable<IHardware> cpuHardwares = _computer.Hardware.Where(hardware => hardware.HardwareType == HardwareType.CPU);

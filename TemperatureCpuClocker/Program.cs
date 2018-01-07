@@ -5,6 +5,7 @@ using CpuTempClockerLib.Enums;
 using System;
 using CpuTempClockerLib.Managers;
 using System.Collections.Generic;
+using CpuTempClockerLib.Constants;
 
 namespace CpuTempClockerLib
 {
@@ -12,7 +13,7 @@ namespace CpuTempClockerLib
     {
         static void Main(string[] args)
         {
-            CPUClockOrchestrator clockOrchestrator = ParseArgs(args);
+            TemperatureTargetedPowerMode clockOrchestrator = ParseArgs(args);
 
             while (true)
             {
@@ -22,32 +23,32 @@ namespace CpuTempClockerLib
             }
         }
 
-        private static CPUClockOrchestrator ParseArgs(string[] args)
+        private static TemperatureTargetedPowerMode ParseArgs(string[] args)
         {
-            CPUOrchestratorSettings orchestratorSettings = new CPUOrchestratorSettings();
+            TemperatureTargetedPowerModeSettings settings = new TemperatureTargetedPowerModeSettings();
 
-            orchestratorSettings.TargetCPUTemperature = GetIntValue(args, TargetTemperature);
-            orchestratorSettings.ProcessorStateSettings = new ProcessorStateSettings(GetIntValue(args, MinimumProcessorState), GetIntValue(args, MaximumProcessorState));
+            settings.TargetCPUTemperature = GetIntValue(args, ProgramArgs.TargetTemperature);
+            settings.ProcessorStateSettings = new ProcessorStateSettings(GetIntValue(args, ProgramArgs.MinimumProcessorState), GetIntValue(args, ProgramArgs.MaximumProcessorState));
 
-            if (args.Contains(PowerTypeAc))
+            if (args.Contains(ProgramArgs.PowerTypeAc))
             {
-                orchestratorSettings.PowerWriteType = orchestratorSettings.PowerWriteType | PowerType.AC;
+                settings.PowerWriteType = settings.PowerWriteType | PowerType.AC;
             }
 
-            if (args.Contains(PowerTypeDc))
+            if (args.Contains(ProgramArgs.PowerTypeDc))
             {
-                orchestratorSettings.PowerWriteType = orchestratorSettings.PowerWriteType | PowerType.DC;
+                settings.PowerWriteType = settings.PowerWriteType | PowerType.DC;
             }
 
-            if(args.Contains(UseActivePowerScheme))
+            if(args.Contains(ProgramArgs.UseActivePowerScheme))
             {
-                orchestratorSettings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive).SingleOrDefault();
+                settings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive()).SingleOrDefault();
             }
-            else if(args.Contains(PowerScheme))
+            else if(args.Contains(ProgramArgs.PowerScheme))
             {
-                string powerSchemeValue = GetStringValue(args, PowerScheme);
-                orchestratorSettings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.FriendlyName.Contains(powerSchemeValue)).SingleOrDefault();
-                if(orchestratorSettings.PowerScheme == null)
+                string powerSchemeValue = GetStringValue(args, ProgramArgs.PowerScheme);
+                settings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.FriendlyName.Contains(powerSchemeValue)).SingleOrDefault();
+                if(settings.PowerScheme == null)
                 {
                     ShowUsage();
                     return null;
@@ -59,23 +60,23 @@ namespace CpuTempClockerLib
                 return null;
             }
 
-            if(args.Contains(CPUSensorIndex))
+            if(args.Contains(ProgramArgs.CPUSensorIndex))
             {
-                int index = GetIntValue(args, CPUSensorIndex);
+                int index = GetIntValue(args, ProgramArgs.CPUSensorIndex);
                 IEnumerable<CPUSensorCollection> sensors = new CPUSensorsManager().GetCPUSensors();
                 if((index + 1) > sensors.Count())
                 {
                     ShowUsage();
                     return null;
                 }
-                orchestratorSettings.SensorCollection = new CPUSensorsManager().GetCPUSensors().ElementAt(index);
+                settings.SensorCollection = new CPUSensorsManager().GetCPUSensors().ElementAt(index);
             }
             else
             {
-                orchestratorSettings.SensorCollection = new CPUSensorsManager().GetCPUSensors().FirstOrDefault();
+                settings.SensorCollection = new CPUSensorsManager().GetCPUSensors().FirstOrDefault();
             }
 
-            return new CPUClockOrchestrator(orchestratorSettings);
+            return new TemperatureTargetedPowerMode(settings);
         }
 
         private static int GetIntValue(string[] args, string key)
@@ -99,7 +100,6 @@ namespace CpuTempClockerLib
 
         private static T GetValueInternal<T>(string[] args, string key, Func<string, T> parseFunc)
         {
-            int result = -1;
             int pos = Array.IndexOf(args, key);
             if (pos > 0)
             {
@@ -123,14 +123,5 @@ namespace CpuTempClockerLib
         {
             throw new Exception("Error");
         }
-
-        private const string PowerTypeAc = "PowerTypeAc";
-        private const string PowerTypeDc = "PowerTypeDc";
-        private const string TargetTemperature = "TargetTemperature";
-        private const string MinimumProcessorState = "MinimumProcessorState";
-        private const string MaximumProcessorState = "MaximumProcessorState";
-        private const string UseActivePowerScheme = "UseActivePowerScheme";
-        private const string PowerScheme = "PowerScheme";
-        private const string CPUSensorIndex = "CPUSensorIndex";
     }
 }

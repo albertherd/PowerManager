@@ -3,4 +3,7 @@
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartArguments>PowerTypeAc PowerTypeDc TargetTemperature 50 MinimumProcessorState 100 MaximumProcessorState 100 UseActivePowerScheme</StartArguments>
+  </PropertyGroup>
 </Project>

@@ -4,7 +4,7 @@ using OpenHardwareMonitor.Hardware;
 
 namespace CpuTempClockerLib.Models
 {
-    public class CPUOrchestratorSettings
+    public class TemperatureTargetedPowerModeSettings
     {
         public int TargetCPUTemperature { get; set; }
         public PowerType PowerWriteType { get; set; }

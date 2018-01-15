@@ -1,0 +1,10 @@
+C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe.config
+C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe
+C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.pdb
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csprojResolveAssemblyReference.cache
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.Form1.resources
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.Properties.Resources.resources
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.GenerateResource.Cache
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.CoreCompileInputs.cache
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.exe
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.pdb

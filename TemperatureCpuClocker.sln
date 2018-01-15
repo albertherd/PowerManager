@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemperatureCpuClocker", "TemperatureCpuClocker\TemperatureCpuClocker.csproj", "{70E233C1-C43B-4149-8E91-85ED92B69BF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CpuTempClockerLib", "CpuTempClockerLib\CpuTempClockerLib.csproj", "{C1270C2F-BD2F-4474-A932-9C128D10D34D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CpuTempClockerLib.UI", "CpuTempClockerLib.UI\CpuTempClockerLib.UI.csproj", "{832645D9-C140-43B0-8FFC-E9B47A20675C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C1270C2F-BD2F-4474-A932-9C128D10D34D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1270C2F-BD2F-4474-A932-9C128D10D34D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1270C2F-BD2F-4474-A932-9C128D10D34D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{832645D9-C140-43B0-8FFC-E9B47A20675C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{832645D9-C140-43B0-8FFC-E9B47A20675C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{832645D9-C140-43B0-8FFC-E9B47A20675C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{832645D9-C140-43B0-8FFC-E9B47A20675C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

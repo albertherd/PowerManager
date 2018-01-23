@@ -50,6 +50,27 @@ namespace CpuTempClockerLib.Models
             return result;
         }
 
+        public CPUStates GetCPUStates()
+        {
+            CPUStates result = new CPUStates();
+            int acCPUState = 0;
+            int dcCPUState = 0;
+
+            IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
+
+            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, ref acCPUState) == ReturnCodes.ERROR_SUCCESS)
+            {
+                result.AcPowerIndex = acCPUState;
+            }
+
+            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, ref dcCPUState) == ReturnCodes.ERROR_SUCCESS)
+            {
+                result.DcPowerIndex = dcCPUState;
+            }
+
+            return result;
+        }
+
         public bool IsActive()
         {
             IntPtr ptrActiveSchemeGuid = IntPtr.Zero;

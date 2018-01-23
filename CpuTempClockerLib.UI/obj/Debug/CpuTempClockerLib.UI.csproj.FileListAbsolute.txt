@@ -8,6 +8,5 @@ C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.C
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.exe
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.pdb
 C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.dll
-C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\OpenHardwareMonitorLib.dll
 C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.pdb
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.MainForm.resources

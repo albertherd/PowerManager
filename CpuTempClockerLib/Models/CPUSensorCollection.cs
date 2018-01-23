@@ -18,6 +18,7 @@ namespace CpuTempClockerLib.Managers
         {
             _thermalSensors = hardware.Sensors
                 .Where(currentSensor => currentSensor.SensorType == SensorType.Temperature).ToList();
+            SetMainThermalSensorHeuristically();
         }
 
         public float? GetTemperature()
@@ -47,11 +48,11 @@ namespace CpuTempClockerLib.Managers
             {
                 PackageSensor = _thermalSensors.FirstOrDefault();
             }
-            if (packageSensors.Count == 1)
+            else if (packageSensors.Count == 1)
             {
                 PackageSensor = packageSensors.First();
             }
-            else if (packageSensors.Count > 1)
+            else
             {
                 ISensor firstSensor = packageSensors.Where(sensor => sensor.Name.Contains("1")).FirstOrDefault();
                 if (firstSensor != null)

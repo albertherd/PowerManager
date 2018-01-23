@@ -27,6 +27,11 @@ namespace CpuTempClockerLib.Managers
             return powerSchemes;
         }
 
+        public IntPtr SubscribeToPowerSchemeChange(IntPtr hwnd)
+        {
+            return User32.RegisterPowerSettingNotification(hwnd, ref User32.GUID_POWERSCHEME_PERSONALITY, User32.DEVICE_NOTIFY_WINDOW_HANDLE);
+        }
+
         private List<SafeHeapHandle<Guid>> GetPowerSchemeGuids()
         {
             List<SafeHeapHandle<Guid>> result = new List<SafeHeapHandle<Guid>>();

@@ -8,7 +8,11 @@ namespace CpuTempClockerLib.Models
 {
     public class CPUStates
     {
-        public int AcPowerIndex { get; set; }
-        public int DcPowerIndex { get; set; }
+        public int AcMinPowerIndex { get; set; }
+        public int AcMaxPowerIndex { get; set; }
+        public int DcMinPowerIndex { get; set; }
+        public int DcMaxPowerIndex { get; set; }
+        public bool IsOnAcPower { get; set; }
+        public bool IsOnDcPower { get; set; }
     }
 }

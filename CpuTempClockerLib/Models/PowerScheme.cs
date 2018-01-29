@@ -2,13 +2,13 @@
 using CpuTempClockerLib.Native;
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace CpuTempClockerLib.Models
 {
     public class PowerScheme : IDisposable
     {
         private static Guid GUID_PROCESSOR_SETTINGS_SUBGROUP = Guid.Parse("54533251-82BE-4824-96C1-47B60B740D00");
-        private static Guid GUID_PROCESSOR_THROTTLE_MAXIMUM = Guid.Parse("BC5038F7-23E0-4960-96DA-33ABAF5935EC");
 
         private SafeHeapHandle<Guid> _guidHandleSafe;
         private int _lastPercentageSet;
@@ -36,10 +36,10 @@ namespace CpuTempClockerLib.Models
 
             IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
 
-            if (powerTypeFlags.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
+            if (powerTypeFlags.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
                 return false;
 
-            if (powerTypeFlags.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
+            if (powerTypeFlags.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
                 return false;
 
             bool result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
@@ -53,20 +53,32 @@ namespace CpuTempClockerLib.Models
         public CPUStates GetCPUStates()
         {
             CPUStates result = new CPUStates();
-            int acCPUState = 0;
-            int dcCPUState = 0;
+            int state = 0;
 
             IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
 
-            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, ref acCPUState) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
-                result.AcPowerIndex = acCPUState;
+                result.AcMaxPowerIndex = state;
             }
 
-            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref GUID_PROCESSOR_THROTTLE_MAXIMUM, ref dcCPUState) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
-                result.DcPowerIndex = dcCPUState;
+                result.DcMaxPowerIndex = state;
             }
+
+            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            {
+                result.AcMinPowerIndex = state;
+            }
+
+            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            {
+                result.DcMinPowerIndex = state;
+            }
+
+            result.IsOnAcPower = SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline;
+            result.IsOnDcPower = SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online;
 
             return result;
         }

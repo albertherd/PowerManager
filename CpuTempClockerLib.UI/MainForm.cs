@@ -1,32 +1,31 @@
 ﻿using CpuTempClockerLib.Managers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using CpuTempClockerLib.Models;
-using System.Windows.Threading;
-using Microsoft.Win32;
 using CpuTempClockerLib.Native.Constants.WindowProc;
 using static CpuTempClockerLib.Native.User32;
-using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace CpuTempClockerLib.UI
 {
     public partial class MainForm : Form
     {
-        private Dictionary<PowerScheme, string> _powerSchemes;
+        private List<PowerScheme> _powerSchemes;
+        private PowerScheme _activePowerScheme;
         private Dictionary<CPUSensorCollection, string> _cpuSensorCollections;
         private PowerSchemesManager _powerSchemesManager = new PowerSchemesManager();
+        private TemperatureTargetedPowerMode temperatureTargetedPowerMode;
+        private System.Windows.Forms.Timer temperatureTargetedPowerModeCycleTimer;
 
         public MainForm()
         {
             InitializeComponent();
-            PopulatePowerSchemes();
+            SetCycleTimer();
+            SetupPowerSchemeDropdown();
+            SetupCpuStateInfo(_activePowerScheme);
             PopulateCPUSensors();
             SubscribeToPowerSchemeChanges(Handle);
         }
@@ -44,6 +43,13 @@ namespace CpuTempClockerLib.UI
             base.WndProc(ref m);
         }
 
+        private void SetCycleTimer()
+        {
+            temperatureTargetedPowerModeCycleTimer = new System.Windows.Forms.Timer();
+            temperatureTargetedPowerModeCycleTimer.Interval = 200;
+            temperatureTargetedPowerModeCycleTimer.Tick += CycleTimer_Tick;
+        }
+
         private void PopulateCPUSensors()
         {
             _cpuSensorCollections = new CPUSensorsManager().GetCPUSensors().ToDictionary(cpuSensor => cpuSensor, cpuSensor => cpuSensor.PackageSensor.Name);
@@ -54,15 +60,34 @@ namespace CpuTempClockerLib.UI
             CPUSensorsComboBox.SelectedIndex = 0;
         }
 
-        private void PopulatePowerSchemes()
+        private void SetupPowerSchemeDropdown()
         {
-            List<PowerScheme> powerSchemes = _powerSchemesManager.GetPowerSchemes();
-            _powerSchemes = powerSchemes.ToDictionary(powerScheme => powerScheme, powerScheme => powerScheme.FriendlyName);
+            _powerSchemes = _powerSchemesManager.GetPowerSchemes();
+            _activePowerScheme = _powerSchemes.Where(powerScheme => powerScheme.IsActive()).FirstOrDefault();
 
             PowerSchemesComboBox.DataSource = new BindingSource(_powerSchemes, null);
-            PowerSchemesComboBox.ValueMember = "Key";
-            PowerSchemesComboBox.DisplayMember = "Value";
-            PowerSchemesComboBox.SelectedItem = _powerSchemes.Where(powerScheme => powerScheme.Key.IsActive()).Select(powerScheme => powerScheme.Value).FirstOrDefault();
+            PowerSchemesComboBox.ValueMember = "Guid";
+            PowerSchemesComboBox.DisplayMember = "FriendlyName";
+            PowerSchemesComboBox.SelectedItem = _activePowerScheme.FriendlyName;
+        }
+
+        private void SetupCpuStateInfo(PowerScheme powerScheme)
+        {
+            CPUStates cpuStates = powerScheme.GetCPUStates();
+            if (cpuStates.IsOnAcPower)
+            {
+                minCpuUsageNumeric.Value = cpuStates.AcMinPowerIndex;
+                maxCpuUsageNumeric.Value = cpuStates.AcMaxPowerIndex;
+            }
+            else if (cpuStates.IsOnDcPower)
+            {
+                minCpuUsageNumeric.Value = cpuStates.DcMinPowerIndex;
+                maxCpuUsageNumeric.Value = cpuStates.DcMaxPowerIndex;
+            }
+            else
+            {
+                throw new Exception("Cannot decide whether on AC or DC.");
+            }
         }
 
         private void SubscribeToPowerSchemeChanges(IntPtr hwnd)
@@ -72,9 +97,50 @@ namespace CpuTempClockerLib.UI
 
         private void SetPowerScheme()
         {
-            string activePowerScheme = _powerSchemes.Where(powerScheme => powerScheme.Key.IsActive()).Select(powerScheme => powerScheme.Value).FirstOrDefault();
-            ActivePowerSchemeValueLabel.Text = activePowerScheme;
-            PowerSchemesComboBox.SelectedItem = activePowerScheme;
+            _activePowerScheme = _powerSchemes.Where(powerScheme => powerScheme.IsActive()).FirstOrDefault();
+            ActivePowerSchemeValueLabel.Text = _activePowerScheme.FriendlyName;
+        }
+
+        private void TemperatureTargetModeToggleButton_Click(object sender, EventArgs e)
+        {
+            if (temperatureTargetedPowerMode == null)
+                EnableTemperatureTargetMode();
+            else
+                DisableTemperatureTargetMode();
+        }
+
+        private void EnableTemperatureTargetMode()
+        {
+            temperatureTargetedPowerMode = new TemperatureTargetedPowerMode(new TemperatureTargetedPowerModeSettings
+            {
+                PowerScheme = _activePowerScheme,
+                PowerWriteType = Enums.PowerType.AC | Enums.PowerType.DC,
+                ProcessorStateSettings = new ProcessorStateSettings(Convert.ToInt32(minCpuUsageNumeric.Value), Convert.ToInt32(maxCpuUsageNumeric.Value)),
+                SensorCollection = _cpuSensorCollections.ElementAt(0).Key,
+                TargetCPUTemperature = Convert.ToInt32(TargetCpuTemperatureNumericUpDown.Value)
+            });
+
+            temperatureTargetedPowerModeCycleTimer.Start();
+            TemperatureTargetModeToggleButton.Text = "Stop";
+            temperatureTargetModePanel.Enabled = false;
+        }
+
+        private void DisableTemperatureTargetMode()
+        {
+            temperatureTargetModePanel.Enabled = true;
+            TemperatureTargetModeToggleButton.Text = "Start";
+            temperatureTargetedPowerModeCycleTimer.Stop();
+            temperatureTargetedPowerMode = null;
+        }
+
+        private void CycleTimer_Tick(object sender, EventArgs e)
+        {
+            temperatureTargetedPowerMode.DoCycle();
+        }
+
+        private void PowerSchemesComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetupCpuStateInfo(PowerSchemesComboBox.SelectedValue);
         }
     }
 }

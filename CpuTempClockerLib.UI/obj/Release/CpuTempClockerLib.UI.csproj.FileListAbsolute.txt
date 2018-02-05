@@ -1,0 +1,13 @@
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\CpuTempClockerLib.UI.exe.config
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\CpuTempClockerLib.UI.exe
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\CpuTempClockerLib.UI.pdb
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\CpuTempClockerLib.dll
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\OpenHardwareMonitorLib.dll
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Release\CpuTempClockerLib.pdb
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.csprojResolveAssemblyReference.cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.MainForm.resources
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.Properties.Resources.resources
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.csproj.GenerateResource.Cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.csproj.CoreCompileInputs.cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.exe
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Release\CpuTempClockerLib.UI.pdb

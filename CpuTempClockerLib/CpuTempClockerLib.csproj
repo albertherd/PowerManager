@@ -49,6 +49,7 @@
     <Compile Include="Native\Constants\WindowProc\UMsg.cs" />
     <Compile Include="Native\Constants\WindowProc\WParam.cs" />
     <Compile Include="Native\User32.cs" />
+    <Compile Include="PowerModes\CpuUsageTargetedPowerMode.cs" />
     <Compile Include="PowerModes\TemperatureTargetedPowerMode.cs" />
     <Compile Include="Managers\CPUSensorsManager.cs" />
     <Compile Include="Models\CPUSensorCollection.cs" />

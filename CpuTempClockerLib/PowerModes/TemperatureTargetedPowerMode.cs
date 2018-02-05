@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CpuTempClockerLib.Managers;
 
-namespace CpuTempClockerLib
+namespace CpuTempClockerLib.PowerModes
 {
     public class TemperatureTargetedPowerMode
     {

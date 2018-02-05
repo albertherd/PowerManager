@@ -8,8 +8,6 @@ namespace CpuTempClockerLib.Models
 {
     public class PowerScheme : IDisposable
     {
-        private static Guid GUID_PROCESSOR_SETTINGS_SUBGROUP = Guid.Parse("54533251-82BE-4824-96C1-47B60B740D00");
-
         private SafeHeapHandle<Guid> _guidHandleSafe;
         private int _lastPercentageSet;
 
@@ -36,13 +34,11 @@ namespace CpuTempClockerLib.Models
 
             IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
 
-            if (powerTypeFlags.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
-                return false;
+            bool result = SetCPUState(percentage, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, powerTypeFlags);
+            if (!result)
+                return result;
 
-            if (powerTypeFlags.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, percentage) != ReturnCodes.ERROR_SUCCESS)
-                return false;
-
-            bool result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
+            result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
 
             if (result)
                 _lastPercentageSet = percentage;
@@ -57,22 +53,22 @@ namespace CpuTempClockerLib.Models
 
             IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
 
-            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
                 result.AcMaxPowerIndex = state;
             }
 
-            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
                 result.DcMaxPowerIndex = state;
             }
 
-            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadACValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
                 result.AcMinPowerIndex = state;
             }
 
-            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
+            if (PowrProf.PowerReadDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MINIMUM, ref state) == ReturnCodes.ERROR_SUCCESS)
             {
                 result.DcMinPowerIndex = state;
             }
@@ -81,6 +77,31 @@ namespace CpuTempClockerLib.Models
             result.IsOnDcPower = SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online;
 
             return result;
+        }
+
+        public void SetCPUStates(CPUStates cpuStates)
+        {
+            SetCPUState(cpuStates.AcMaxPowerIndex, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, PowerType.AC);
+            SetCPUState(cpuStates.AcMinPowerIndex, User32.GUID_PROCESSOR_THROTTLE_MINIMUM, PowerType.AC);
+            SetCPUState(cpuStates.DcMaxPowerIndex, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, PowerType.DC);
+            SetCPUState(cpuStates.DcMinPowerIndex, User32.GUID_PROCESSOR_THROTTLE_MINIMUM, PowerType.DC);
+        }
+
+        private bool SetCPUState(int percentage, Guid processorThrottleType, PowerType powerTypeFlags)
+        {
+            IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
+
+            if (powerTypeFlags.HasFlag(PowerType.AC)) 
+            {
+                return PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref processorThrottleType, percentage) != ReturnCodes.ERROR_SUCCESS;
+            }
+
+            if (powerTypeFlags.HasFlag(PowerType.DC))
+            {
+                return PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref User32.GUID_PROCESSOR_SETTINGS_SUBGROUP, ref processorThrottleType, percentage) != ReturnCodes.ERROR_SUCCESS;
+            }
+
+            return false;
         }
 
         public bool IsActive()

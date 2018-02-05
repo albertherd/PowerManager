@@ -8,17 +8,20 @@ using CpuTempClockerLib.Models;
 using CpuTempClockerLib.Native.Constants.WindowProc;
 using static CpuTempClockerLib.Native.User32;
 using System.Threading;
+using CpuTempClockerLib.PowerModes;
 
 namespace CpuTempClockerLib.UI
 {
     public partial class MainForm : Form
     {
+        private CPUSensorCollection _cpuSensorCollection;
         private List<PowerScheme> _powerSchemes;
         private PowerScheme _activePowerScheme;
-        private Dictionary<CPUSensorCollection, string> _cpuSensorCollections;
         private PowerSchemesManager _powerSchemesManager = new PowerSchemesManager();
-        private TemperatureTargetedPowerMode temperatureTargetedPowerMode;
-        private System.Windows.Forms.Timer temperatureTargetedPowerModeCycleTimer;
+        private TemperatureTargetedPowerMode _temperatureTargetedPowerMode;
+        private CpuUsageTargetedPowerMode _cpuUsageTargetedPowerMode;
+        private CPUStates _activePowerSchemeCpuStates;
+        private System.Windows.Forms.Timer _temperatureTargetedPowerModeCycleTimer, _infoPanelUpdaterTimer;
 
         public MainForm()
         {
@@ -28,6 +31,7 @@ namespace CpuTempClockerLib.UI
             SetupCpuStateInfo(_activePowerScheme);
             PopulateCPUSensors();
             SubscribeToPowerSchemeChanges(Handle);
+            SetupInfoPanelUpdater();
         }
 
         protected override void WndProc(ref Message m)
@@ -45,19 +49,14 @@ namespace CpuTempClockerLib.UI
 
         private void SetCycleTimer()
         {
-            temperatureTargetedPowerModeCycleTimer = new System.Windows.Forms.Timer();
-            temperatureTargetedPowerModeCycleTimer.Interval = 200;
-            temperatureTargetedPowerModeCycleTimer.Tick += CycleTimer_Tick;
+            _temperatureTargetedPowerModeCycleTimer = new System.Windows.Forms.Timer();
+            _temperatureTargetedPowerModeCycleTimer.Interval = 200;
+            _temperatureTargetedPowerModeCycleTimer.Tick += CycleTimer_Tick;
         }
 
         private void PopulateCPUSensors()
         {
-            _cpuSensorCollections = new CPUSensorsManager().GetCPUSensors().ToDictionary(cpuSensor => cpuSensor, cpuSensor => cpuSensor.PackageSensor.Name);
-
-            CPUSensorsComboBox.DataSource = new BindingSource(_cpuSensorCollections, null);
-            CPUSensorsComboBox.ValueMember = "Key";
-            CPUSensorsComboBox.DisplayMember = "Value";
-            CPUSensorsComboBox.SelectedIndex = 0;
+            _cpuSensorCollection = new CPUSensorsManager().GetCPUSensors().FirstOrDefault();
         }
 
         private void SetupPowerSchemeDropdown()
@@ -66,23 +65,22 @@ namespace CpuTempClockerLib.UI
             _activePowerScheme = _powerSchemes.Where(powerScheme => powerScheme.IsActive()).FirstOrDefault();
 
             PowerSchemesComboBox.DataSource = new BindingSource(_powerSchemes, null);
-            PowerSchemesComboBox.ValueMember = "Guid";
             PowerSchemesComboBox.DisplayMember = "FriendlyName";
-            PowerSchemesComboBox.SelectedItem = _activePowerScheme.FriendlyName;
+            PowerSchemesComboBox.SelectedItem = _activePowerScheme;
         }
 
         private void SetupCpuStateInfo(PowerScheme powerScheme)
         {
-            CPUStates cpuStates = powerScheme.GetCPUStates();
-            if (cpuStates.IsOnAcPower)
+            _activePowerSchemeCpuStates = powerScheme.GetCPUStates();
+            if (_activePowerSchemeCpuStates.IsOnAcPower)
             {
-                minCpuUsageNumeric.Value = cpuStates.AcMinPowerIndex;
-                maxCpuUsageNumeric.Value = cpuStates.AcMaxPowerIndex;
+                minCpuUsageNumeric.Value = _activePowerSchemeCpuStates.AcMinPowerIndex;
+                maxCpuUsageNumeric.Value = _activePowerSchemeCpuStates.AcMaxPowerIndex;
             }
-            else if (cpuStates.IsOnDcPower)
+            else if (_activePowerSchemeCpuStates.IsOnDcPower)
             {
-                minCpuUsageNumeric.Value = cpuStates.DcMinPowerIndex;
-                maxCpuUsageNumeric.Value = cpuStates.DcMaxPowerIndex;
+                minCpuUsageNumeric.Value = _activePowerSchemeCpuStates.DcMinPowerIndex;
+                maxCpuUsageNumeric.Value = _activePowerSchemeCpuStates.DcMaxPowerIndex;
             }
             else
             {
@@ -95,15 +93,48 @@ namespace CpuTempClockerLib.UI
             _powerSchemesManager.SubscribeToPowerSchemeChange(hwnd);
         }
 
+        private void SetupInfoPanelUpdater()
+        {
+            _infoPanelUpdaterTimer = new System.Windows.Forms.Timer();
+            _infoPanelUpdaterTimer.Interval = 1000;
+            _infoPanelUpdaterTimer.Tick += _infoPanelUpdaterTimer_Tick;
+            _infoPanelUpdaterTimer.Start();
+        }
+
+        private void _infoPanelUpdaterTimer_Tick(object sender, EventArgs e)
+        {
+            currentCpuTemperatureLabelValue.Text = _cpuSensorCollection.PackageSensor.Value.ToString() + " C";
+        }
+
         private void SetPowerScheme()
         {
             _activePowerScheme = _powerSchemes.Where(powerScheme => powerScheme.IsActive()).FirstOrDefault();
             ActivePowerSchemeValueLabel.Text = _activePowerScheme.FriendlyName;
         }
 
-        private void TemperatureTargetModeToggleButton_Click(object sender, EventArgs e)
+        private void SetButton_Click(object sender, EventArgs e)
         {
-            if (temperatureTargetedPowerMode == null)
+            if (dontAllowCpuToGoOverThreshold.Enabled)
+            {
+                ToggleTemperatureTargetMode();
+            }
+            else
+            {
+                ToggleCpuStatesTargetMode();
+            }
+        }
+
+        private void ToggleCpuStatesTargetMode()
+        {
+            if (_cpuUsageTargetedPowerMode == null)
+                _cpuUsageTargetedPowerMode = new CpuUsageTargetedPowerMode(_activePowerScheme);
+
+            _cpuUsageTargetedPowerMode.SetCPUStates(_activePowerSchemeCpuStates);
+        }
+
+        private void ToggleTemperatureTargetMode()
+        {
+            if (_temperatureTargetedPowerMode == null)
                 EnableTemperatureTargetMode();
             else
                 DisableTemperatureTargetMode();
@@ -111,36 +142,61 @@ namespace CpuTempClockerLib.UI
 
         private void EnableTemperatureTargetMode()
         {
-            temperatureTargetedPowerMode = new TemperatureTargetedPowerMode(new TemperatureTargetedPowerModeSettings
+            _temperatureTargetedPowerMode = new TemperatureTargetedPowerMode(new TemperatureTargetedPowerModeSettings
             {
                 PowerScheme = _activePowerScheme,
                 PowerWriteType = Enums.PowerType.AC | Enums.PowerType.DC,
                 ProcessorStateSettings = new ProcessorStateSettings(Convert.ToInt32(minCpuUsageNumeric.Value), Convert.ToInt32(maxCpuUsageNumeric.Value)),
-                SensorCollection = _cpuSensorCollections.ElementAt(0).Key,
+                SensorCollection = _cpuSensorCollection,
                 TargetCPUTemperature = Convert.ToInt32(TargetCpuTemperatureNumericUpDown.Value)
             });
 
-            temperatureTargetedPowerModeCycleTimer.Start();
-            TemperatureTargetModeToggleButton.Text = "Stop";
-            temperatureTargetModePanel.Enabled = false;
+            _temperatureTargetedPowerModeCycleTimer.Start();
         }
 
         private void DisableTemperatureTargetMode()
         {
-            temperatureTargetModePanel.Enabled = true;
-            TemperatureTargetModeToggleButton.Text = "Start";
-            temperatureTargetedPowerModeCycleTimer.Stop();
-            temperatureTargetedPowerMode = null;
+            _temperatureTargetedPowerModeCycleTimer.Stop();
+            _temperatureTargetedPowerMode = null;
         }
 
         private void CycleTimer_Tick(object sender, EventArgs e)
         {
-            temperatureTargetedPowerMode.DoCycle();
+            _temperatureTargetedPowerMode.DoCycle();
+        }
+
+        private void dontAllowCpuToGoOverThreshold_CheckedChanged(object sender, EventArgs e)
+        {
+            TargetCpuTemperatureNumericUpDown.Enabled = dontAllowCpuToGoOverThreshold.Checked;
+        }
+
+        private void minCpuUsageNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            if (_activePowerSchemeCpuStates.IsOnAcPower)
+            {
+                 _activePowerSchemeCpuStates.AcMinPowerIndex = (int)minCpuUsageNumeric.Value;
+            }
+            else if (_activePowerSchemeCpuStates.IsOnDcPower)
+            {
+                 _activePowerSchemeCpuStates.DcMinPowerIndex = (int)minCpuUsageNumeric.Value;
+            }
+        }
+
+        private void maxCpuUsageNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            if (_activePowerSchemeCpuStates.IsOnAcPower)
+            {
+                _activePowerSchemeCpuStates.AcMaxPowerIndex = (int)maxCpuUsageNumeric.Value;
+            }
+            else if (_activePowerSchemeCpuStates.IsOnDcPower)
+            {
+                _activePowerSchemeCpuStates.DcMaxPowerIndex = (int)maxCpuUsageNumeric.Value;
+            }
         }
 
         private void PowerSchemesComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetupCpuStateInfo(PowerSchemesComboBox.SelectedValue);
+            SetupCpuStateInfo((PowerScheme)PowerSchemesComboBox.SelectedItem);
         }
     }
 }

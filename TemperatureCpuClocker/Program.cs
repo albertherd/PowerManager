@@ -42,12 +42,12 @@ namespace CpuTempClockerLib
 
             if(args.Contains(ProgramArgs.UseActivePowerScheme))
             {
-                settings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive()).SingleOrDefault();
+                settings.PowerScheme = new User32NativeWrapper().GetPowerSchemes().Where(powerScheme => powerScheme.IsActive()).SingleOrDefault();
             }
             else if(args.Contains(ProgramArgs.PowerScheme))
             {
                 string powerSchemeValue = GetStringValue(args, ProgramArgs.PowerScheme);
-                settings.PowerScheme = new PowerSchemesManager().GetPowerSchemes().Where(powerScheme => powerScheme.FriendlyName.Contains(powerSchemeValue)).SingleOrDefault();
+                settings.PowerScheme = new User32NativeWrapper().GetPowerSchemes().Where(powerScheme => powerScheme.FriendlyName.Contains(powerSchemeValue)).SingleOrDefault();
                 if(settings.PowerScheme == null)
                 {
                     ShowUsage();
@@ -63,17 +63,17 @@ namespace CpuTempClockerLib
             if(args.Contains(ProgramArgs.CPUSensorIndex))
             {
                 int index = GetIntValue(args, ProgramArgs.CPUSensorIndex);
-                IEnumerable<CPUSensorCollection> sensors = new CPUSensorsManager().GetCPUSensors();
+                IEnumerable<CPUSensorCollection> sensors = new CPUSensorsFactory().GetCPUSensors();
                 if((index + 1) > sensors.Count())
                 {
                     ShowUsage();
                     return null;
                 }
-                settings.SensorCollection = new CPUSensorsManager().GetCPUSensors().ElementAt(index);
+                settings.SensorCollection = new CPUSensorsFactory().GetCPUSensors().ElementAt(index);
             }
             else
             {
-                settings.SensorCollection = new CPUSensorsManager().GetCPUSensors().FirstOrDefault();
+                settings.SensorCollection = new CPUSensorsFactory().GetCPUSensors().FirstOrDefault();
             }
 
             return new TemperatureTargetedPowerMode(settings);

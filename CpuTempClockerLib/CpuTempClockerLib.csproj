@@ -45,16 +45,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ProgramArgs.cs" />
-    <Compile Include="Models\CPUStates.cs" />
+    <Compile Include="Factories\PowerSchemesFactory.cs" />
     <Compile Include="Native\Constants\WindowProc\UMsg.cs" />
     <Compile Include="Native\Constants\WindowProc\WParam.cs" />
+    <Compile Include="Native\Kernel32.cs" />
     <Compile Include="Native\User32.cs" />
+    <Compile Include="PowerModes\ProcessorStatePowerMode.cs" />
     <Compile Include="PowerModes\TemperatureTargetedPowerMode.cs" />
-    <Compile Include="Managers\CPUSensorsManager.cs" />
+    <Compile Include="Factories\CPUSensorsFactory.cs" />
     <Compile Include="Models\CPUSensorCollection.cs" />
     <Compile Include="Models\ProcessorStateSettings.cs" />
     <Compile Include="Native\Constants\ReturnCodes.cs" />
-    <Compile Include="Managers\PowerSchemesManager.cs" />
+    <Compile Include="NativeWrappers\PowerSchemesManager.cs" />
     <Compile Include="Enums\TemperatureFluctuationType.cs" />
     <Compile Include="Models\PowerScheme.cs" />
     <Compile Include="Models\TemperatureTargetedPowerModeSettings.cs" />

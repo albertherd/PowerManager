@@ -1,18 +1,16 @@
-﻿using OpenHardwareMonitor.Hardware;
-using System;
+﻿using CpuTempClockerLib.Managers;
+using OpenHardwareMonitor.Hardware;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CpuTempClockerLib.Managers
+namespace CpuTempClockerLib.Factories
 {
-    public class CPUSensorsManager
+    public class CPUSensorsFactory
     {
-        private Computer _computer = new Computer() { CPUEnabled = true };
-        private List<CPUSensorCollection> _cpuSensorsCollection = new List<CPUSensorCollection>();
+        private static Computer _computer = new Computer() { CPUEnabled = true };
+        private static List<CPUSensorCollection> _cpuSensorsCollection = new List<CPUSensorCollection>();
 
-        public IEnumerable<CPUSensorCollection> GetCPUSensors()
+        public static IEnumerable<CPUSensorCollection> GetCPUSensors()
         {
             if (_cpuSensorsCollection != null && _cpuSensorsCollection.Any())
                 return new List<CPUSensorCollection>(_cpuSensorsCollection);
@@ -25,6 +23,11 @@ namespace CpuTempClockerLib.Managers
             }
 
             return new List<CPUSensorCollection>(_cpuSensorsCollection);
+        }
+
+        public static CPUSensorCollection GetCPUZeroSensor()
+        {
+            return GetCPUSensors().FirstOrDefault();
         }
     }
 }

@@ -9,8 +9,8 @@ namespace CpuTempClockerLib.Models
 {
     public class CPUReading
     {
-        private int _minimumProcessorState;
-        private int _maximumProcessorState;
+        private int _minimumProcessorState = 5;
+        private int _maximumProcessorState = 100;
         private int _processorState = 100;
 
         public float Temperature { get; set; }
@@ -35,10 +35,8 @@ namespace CpuTempClockerLib.Models
             }
         }
 
-        public CPUReading(ProcessorStateSettings processorStateSettings)
+        public CPUReading()
         {
-            _minimumProcessorState = processorStateSettings.MinimumProcessorState;
-            _maximumProcessorState = processorStateSettings.MaximumProcessorState;
         }
     }
 }

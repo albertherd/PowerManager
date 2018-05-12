@@ -1,25 +1,26 @@
-﻿using CpuTempClockerLib.Enums;
-using CpuTempClockerLib.Models;
-using System.Linq;
+﻿using CpuTempClockerLib.Models;
+using CpuTempClockerLib.Native;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using CpuTempClockerLib.Native;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CpuTempClockerLib.Managers
+namespace CpuTempClockerLib.Factories
 {
-    public class PowerSchemesManager
+    public static class PowerSchemesFactory
     {
-        private List<PowerScheme> powerSchemes = new List<PowerScheme>();
+        private static List<PowerScheme> powerSchemes = new List<PowerScheme>();
 
-        public List<PowerScheme> GetPowerSchemes()
+        public static List<PowerScheme> GetPowerSchemes()
         {
             if (powerSchemes.Any())
                 return new List<PowerScheme>(powerSchemes);
 
             List<SafeHeapHandle<Guid>> powerSchemeGuids = GetPowerSchemeGuids();
 
-            foreach(SafeHeapHandle<Guid> guid in powerSchemeGuids)
+            foreach (SafeHeapHandle<Guid> guid in powerSchemeGuids)
             {
                 powerSchemes.Add(new PowerScheme(guid, GetSchemeName(guid)));
             }
@@ -27,12 +28,12 @@ namespace CpuTempClockerLib.Managers
             return powerSchemes;
         }
 
-        public IntPtr SubscribeToPowerSchemeChange(IntPtr hwnd)
+        public static PowerScheme GetActivePowerScheme()
         {
-            return User32.RegisterPowerSettingNotification(hwnd, ref User32.GUID_POWERSCHEME_PERSONALITY, User32.DEVICE_NOTIFY_WINDOW_HANDLE);
+            return GetPowerSchemes().FirstOrDefault(powerScheme => powerScheme.IsActive());
         }
 
-        private List<SafeHeapHandle<Guid>> GetPowerSchemeGuids()
+        private static List<SafeHeapHandle<Guid>> GetPowerSchemeGuids()
         {
             List<SafeHeapHandle<Guid>> result = new List<SafeHeapHandle<Guid>>();
             IntPtr powerSchemeGuidBuffer;
@@ -47,18 +48,18 @@ namespace CpuTempClockerLib.Managers
                 returnCode = PowrProf.PowerEnumerate(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, PowrProf.PowerDataAccessor.ACCESS_SCHEME, index, powerSchemeGuidBuffer, ref guidSize);
 
                 if (returnCode == 259)
-                    break; 
+                    break;
                 if (returnCode != 0)
                     throw new COMException("Error occurred while enumerating power schemes. Win32 error code: " + returnCode);
 
-                result.Add(new SafeHeapHandle<Guid>(powerSchemeGuidBuffer));                
+                result.Add(new SafeHeapHandle<Guid>(powerSchemeGuidBuffer));
                 index++;
             }
 
             return result;
         }
 
-        private string GetSchemeName(SafeHeapHandle<Guid> guid)
+        private static string GetSchemeName(SafeHeapHandle<Guid> guid)
         {
             IntPtr schemeNameGuidPtr = guid.DangerousGetHandle();
 

@@ -1,33 +1,49 @@
 ﻿using CpuTempClockerLib.Models;
-using CpuTempClockerLib.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CpuTempClockerLib.Managers;
+using CpuTempClockerLib.PowerModes;
+using CpuTempClockerLib.Factories;
+using System.Windows.Forms;
 
-namespace CpuTempClockerLib
+namespace CpuTempClockerLib.PowerModes
 {
-    public class TemperatureTargetedPowerMode
+    public class TemperatureTargetedPowerMode : ProcessorStatePowerMode
     {
-        private readonly float TargetTemperature;
-        private readonly PowerType PowerWriteType;
         private readonly CPUReading _previousReading;
         private readonly CPUReading _currentReading;
-        private readonly PowerScheme _powerScheme;
         private readonly CPUSensorCollection _sensorCollection;
 
-        public TemperatureTargetedPowerMode(TemperatureTargetedPowerModeSettings cpuOrchestratorSettings)
-        {
-            EnsureSettings(cpuOrchestratorSettings);
+        private readonly Timer _timer;
+        private Action<int> _onTick;
+        
+        private float _targetTemperature;
 
-            TargetTemperature = cpuOrchestratorSettings.TargetCPUTemperature;
-            PowerWriteType = cpuOrchestratorSettings.PowerWriteType;
-            _powerScheme = cpuOrchestratorSettings.PowerScheme;
-            _previousReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
-            _currentReading = new CPUReading(cpuOrchestratorSettings.ProcessorStateSettings);
-            _sensorCollection = cpuOrchestratorSettings.SensorCollection;
+        public TemperatureTargetedPowerMode()
+        {
+            _previousReading = new CPUReading();
+            _currentReading = new CPUReading();
+            _sensorCollection = CPUSensorsFactory.GetCPUZeroSensor();
+
+            _timer = new Timer();
+            _timer.Interval = 500;
+            _timer.Tick += (sender, e) => { DoCycle(); _onTick(_currentReading.ProcessorState); };
+        }
+
+        public void Start(int targetTemperature, Action<int> onTick)
+        {
+            _targetTemperature = targetTemperature;
+            _timer.Start();
+            _onTick = onTick;
+        }
+
+        public void Stop()
+        {
+            _timer.Stop();
+        }
+
+        public bool IsRunning()
+        {
+            return _timer.Enabled;
         }
 
         public CPUReading DoCycle()
@@ -42,9 +58,6 @@ namespace CpuTempClockerLib
         {
             if (cpuOrchestratorSettings == null)
                 throw new ArgumentException(nameof(cpuOrchestratorSettings));
-
-            if (cpuOrchestratorSettings.PowerScheme == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings.PowerScheme));
 
             if (cpuOrchestratorSettings.ProcessorStateSettings == null)
                 throw new ArgumentException(nameof(cpuOrchestratorSettings.ProcessorStateSettings));
@@ -64,7 +77,7 @@ namespace CpuTempClockerLib
             if (_currentReading.Temperature == _previousReading.Temperature)
                 return;
 
-            _powerScheme.SetMaxCPUState(PowerWriteType, _currentReading.ProcessorState);
+           SetMaximumProcessorState(_currentReading.ProcessorState);
         }
 
         private void SetCurrentCPUReadings()
@@ -88,8 +101,8 @@ namespace CpuTempClockerLib
 
         private int GetTemperatureDeltaPercentage()
         {
-            float temperatureDelta = TargetTemperature - _currentReading.Temperature;
-            return (int)((temperatureDelta * 100) / TargetTemperature);
+            float temperatureDelta = _targetTemperature - _currentReading.Temperature;
+            return (int)((temperatureDelta * 100) / _targetTemperature);
         }
     }
 }

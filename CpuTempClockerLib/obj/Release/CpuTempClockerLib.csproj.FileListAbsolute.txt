@@ -5,3 +5,10 @@ C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuCloc
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.dll
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.pdb
 C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib\obj\Release\CpuTempClockerLib.csprojResolveAssemblyReference.cache
+C:\dev\PowerManager\CpuTempClockerLib\bin\Release\CpuTempClockerLib.dll
+C:\dev\PowerManager\CpuTempClockerLib\bin\Release\CpuTempClockerLib.pdb
+C:\dev\PowerManager\CpuTempClockerLib\bin\Release\OpenHardwareMonitorLib.dll
+C:\dev\PowerManager\CpuTempClockerLib\obj\Release\CpuTempClockerLib.csprojResolveAssemblyReference.cache
+C:\dev\PowerManager\CpuTempClockerLib\obj\Release\CpuTempClockerLib.csproj.CoreCompileInputs.cache
+C:\dev\PowerManager\CpuTempClockerLib\obj\Release\CpuTempClockerLib.dll
+C:\dev\PowerManager\CpuTempClockerLib\obj\Release\CpuTempClockerLib.pdb

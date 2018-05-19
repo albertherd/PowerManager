@@ -20,6 +20,10 @@ namespace CpuTempClockerLib.UI
         private ProcessorStatePowerMode _processorStatePowerMode;
         private TemperatureTargetedPowerMode _temperatureTargetedPowerMode;
         private CPUSensorCollection _cpuSensorCollection;
+        private readonly Func<Action>[] _tabActivationActions;
+        private Action _onDectivateTabFunc;
+        private bool _hasInitialized;
+        private bool _isExiting;
 
         // Todo
         // Get the current max CPU setting to display in slider
@@ -28,8 +32,17 @@ namespace CpuTempClockerLib.UI
         public MainForm()
         {
             InitializeComponent();
+            _tabActivationActions = new Func<Action>[] { OnProcessorStateTabActivate, OnTemperatureTargetedTabTabActivate };
             SubscribeToPowerSchemeChanges(Handle);
             SetupPeriodicInformationPanel();
+            _hasInitialized = true;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            _isExiting = true;
+            _onDectivateTabFunc();
+            base.OnFormClosing(e);
         }
 
         protected override void WndProc(ref Message m)
@@ -39,12 +52,19 @@ namespace CpuTempClockerLib.UI
                 POWERBROADCAST_SETTING powerBroadcastSetting = (POWERBROADCAST_SETTING)m.GetLParam(typeof(POWERBROADCAST_SETTING));
                 if (powerBroadcastSetting.PowerSetting == GUID_POWERSCHEME_PERSONALITY)
                 {
-                    _processorStatePowerMode = new ProcessorStatePowerMode();
-                    _temperatureTargetedPowerMode = new TemperatureTargetedPowerMode();
-                    maxCpuUsageNumeric.Value = _processorStatePowerMode.GetMaximumProcessorState();
+                    OnPowerSettingChanged();
                 }
             }
             base.WndProc(ref m);
+        }
+
+        private void OnPowerSettingChanged()
+        {
+            if (_hasInitialized)
+            {
+                MessageBox.Show($"Power settings have been changed. Any custom power mode has been de-activated. Re-apply any power settings.", "Power Settings", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1);
+            }
+            DisposePowerModeAndActivateTab(PowerModeTabPages.SelectedIndex);
         }
 
         private void SetupPeriodicInformationPanel()
@@ -65,7 +85,7 @@ namespace CpuTempClockerLib.UI
             User32NativeWrapper.SubscribeToPowerSchemeChange(hwnd);
         }
 
-        private void btnSetMaxCPUState_Click(object sender, EventArgs e)
+        private void BtnSetMaxCPUState_Click(object sender, EventArgs e)
         {
             if (_processorStatePowerMode.SetMaximumProcessorState((int)maxCpuUsageNumeric.Value))
             {
@@ -77,7 +97,7 @@ namespace CpuTempClockerLib.UI
             }
         }
 
-        private void btnSetTargetCPUState_Click(object sender, EventArgs e)
+        private void BtnSetTargetCPUState_Click(object sender, EventArgs e)
         {
             if (!_temperatureTargetedPowerMode.IsRunning())
                 EnableTemperatureTargetedPowerMode();
@@ -89,13 +109,53 @@ namespace CpuTempClockerLib.UI
         {
             _temperatureTargetedPowerMode.Start((int)TargetCpuTemperatureNumericUpDown.Value, (state) =>
             {
-                maxCpuUsageNumeric.Value = state;
+                lblCurrentMaxCPUUsagePercentage.Text = $"{state}%";
             });
+            btnSetTargetCPUState.Text = "Stop";
         }
 
         private void DisableTemperatureTargetedPowerMode()
         {
             _temperatureTargetedPowerMode.Stop();
+            _temperatureTargetedPowerMode.ResetCPUStates();
+            btnSetTargetCPUState.Text = "Start";
+        }
+
+        private void TemperatureTargetModeTabPage_Selected(object sender, TabControlEventArgs e)
+        {
+            DisposePowerModeAndActivateTab(e.TabPageIndex);
+        }
+
+        private void DisposePowerModeAndActivateTab(int tabPageIndex)
+        {
+            _onDectivateTabFunc?.Invoke();
+            _onDectivateTabFunc = _tabActivationActions[tabPageIndex]();
+        }
+
+        private Action OnProcessorStateTabActivate()
+        {
+            _processorStatePowerMode = new ProcessorStatePowerMode();
+            maxCpuUsageNumeric.Value = _processorStatePowerMode.GetMaximumProcessorState();
+            return OnProcessorStateTabDeactivate;
+        }
+
+        private void OnProcessorStateTabDeactivate()
+        {
+            if (_isExiting && persistUsageAfterExitingCheckBox.Checked)
+                return;
+
+            _processorStatePowerMode.Dispose();
+        }
+
+        private Action OnTemperatureTargetedTabTabActivate()
+        {
+            _temperatureTargetedPowerMode = new TemperatureTargetedPowerMode();
+            lblCurrentMaxCPUUsagePercentage.Text = $"{_temperatureTargetedPowerMode.GetMaximumProcessorState()}%";
+            return OnTemperatureTargetedTabDeActivate;
+        }
+
+        private void OnTemperatureTargetedTabDeActivate()
+        {
             _temperatureTargetedPowerMode.Dispose();
         }
     }

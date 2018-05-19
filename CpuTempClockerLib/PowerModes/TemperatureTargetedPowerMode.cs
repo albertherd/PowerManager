@@ -54,18 +54,6 @@ namespace CpuTempClockerLib.PowerModes
             return _currentReading;
         }         
 
-        private void EnsureSettings(TemperatureTargetedPowerModeSettings cpuOrchestratorSettings)
-        {
-            if (cpuOrchestratorSettings == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings));
-
-            if (cpuOrchestratorSettings.ProcessorStateSettings == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings.ProcessorStateSettings));
-
-            if (cpuOrchestratorSettings.SensorCollection == null)
-                throw new ArgumentException(nameof(cpuOrchestratorSettings.SensorCollection));            
-        }
-
         private void SetPreviousCPUReading()
         {
             _previousReading.ProcessorState = _currentReading.ProcessorState;

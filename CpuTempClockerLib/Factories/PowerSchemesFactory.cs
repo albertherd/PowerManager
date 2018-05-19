@@ -11,12 +11,9 @@ namespace CpuTempClockerLib.Factories
 {
     public static class PowerSchemesFactory
     {
-        private static List<PowerScheme> powerSchemes = new List<PowerScheme>();
-
         public static List<PowerScheme> GetPowerSchemes()
         {
-            if (powerSchemes.Any())
-                return new List<PowerScheme>(powerSchemes);
+            List<PowerScheme> powerSchemes = new List<PowerScheme>();
 
             List<SafeHeapHandle<Guid>> powerSchemeGuids = GetPowerSchemeGuids();
 
@@ -30,7 +27,11 @@ namespace CpuTempClockerLib.Factories
 
         public static PowerScheme GetActivePowerScheme()
         {
-            return GetPowerSchemes().FirstOrDefault(powerScheme => powerScheme.IsActive());
+            PowerScheme result = GetPowerSchemes().FirstOrDefault(powerScheme => powerScheme.IsActive());
+            if (result == null)
+                throw new InvalidOperationException("Could not determine the active power scheme");
+
+            return result;
         }
 
         private static List<SafeHeapHandle<Guid>> GetPowerSchemeGuids()

@@ -1,12 +1,24 @@
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe.config
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.pdb
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.dll
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.pdb
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csprojResolveAssemblyReference.cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.MainForm.resources
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.Properties.Resources.resources
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.GenerateResource.Cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.CoreCompileInputs.cache
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.exe
+C:\Users\bertu\OneDrive\Documents\Visual Studio 2017\Projects\TemperatureCpuClocker\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.pdb
 C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe.config
 C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.exe
 C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.UI.pdb
+C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.dll
+C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.pdb
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csprojResolveAssemblyReference.cache
+C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.MainForm.resources
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.Properties.Resources.resources
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.GenerateResource.Cache
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.csproj.CoreCompileInputs.cache
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.exe
 C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.pdb
-C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.dll
-C:\dev\PowerManager\CpuTempClockerLib.UI\bin\Debug\CpuTempClockerLib.pdb
-C:\dev\PowerManager\CpuTempClockerLib.UI\obj\Debug\CpuTempClockerLib.UI.MainForm.resources

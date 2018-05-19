@@ -12,11 +12,15 @@ namespace CpuTempClockerLib.PowerModes
     public class ProcessorStatePowerMode : IDisposable
     {
         private bool _disposed = false;
+        private int _originalMaxCPUStateSet;
+        private int _originalMinCPUStateSet;
         protected PowerScheme _powerScheme;
 
         public ProcessorStatePowerMode()
         {
-            _powerScheme = PowerSchemesFactory.GetActivePowerScheme() ?? throw new InvalidOperationException("Could not determine the active power scheme");
+            _powerScheme = PowerSchemesFactory.GetActivePowerScheme();
+            _originalMaxCPUStateSet = _powerScheme.GetMaxCPUState();
+            _originalMinCPUStateSet = _powerScheme.GetMinCPUState();
         }
 
         public bool SetMaximumProcessorState(int percentage)
@@ -28,6 +32,16 @@ namespace CpuTempClockerLib.PowerModes
         {
             return _powerScheme.GetMaxCPUState();
         }
+
+        public void ResetCPUStates()
+        {
+            // We re-fetch the power scheme since this will be called when power scheme changes.
+            //PowerScheme activePowerScheme = PowerSchemesFactory.GetActivePowerScheme();
+            //activePowerScheme.SetMaxCPUState(_originalMaxCPUStateSet);
+            //activePowerScheme.SetMinCPUState(_originalMinCPUStateSet);
+            _powerScheme.ResetCPUStates();
+        }
+
 
         public void Dispose()
         {

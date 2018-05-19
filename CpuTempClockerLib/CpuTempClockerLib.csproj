@@ -54,12 +54,10 @@
     <Compile Include="PowerModes\TemperatureTargetedPowerMode.cs" />
     <Compile Include="Factories\CPUSensorsFactory.cs" />
     <Compile Include="Models\CPUSensorCollection.cs" />
-    <Compile Include="Models\ProcessorStateSettings.cs" />
     <Compile Include="Native\Constants\ReturnCodes.cs" />
     <Compile Include="NativeWrappers\PowerSchemesManager.cs" />
     <Compile Include="Enums\TemperatureFluctuationType.cs" />
     <Compile Include="Models\PowerScheme.cs" />
-    <Compile Include="Models\TemperatureTargetedPowerModeSettings.cs" />
     <Compile Include="Models\CPUReading.cs" />
     <Compile Include="Enums\PowerWriteType.cs" />
     <Compile Include="Models\SafeHeapHandle.cs" />

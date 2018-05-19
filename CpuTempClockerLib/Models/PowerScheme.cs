@@ -12,9 +12,12 @@ namespace CpuTempClockerLib.Models
 
         private bool _disposed = false;
         private SafeHeapHandle<Guid> _guidHandleSafe;
-        private int _originalCPUStateSet;
+
         private int _lastMaxCPUStateSet;
-        
+        private int _lastMinCPUStateSet;
+        private int _originalMaxCPUStateSet;
+        private int _originalMinCPUStateSet;
+
         private Guid _guid;
         private string _friendlyName;
         private PowerType _powerType;
@@ -29,31 +32,39 @@ namespace CpuTempClockerLib.Models
             _guid = _guidHandleSafe.ToManagedMemory();
             _friendlyName = friendlyName;
             _powerType = SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online ? PowerType.AC : PowerType.DC;
-            _originalCPUStateSet = GetMaxCPUState();
+            _originalMaxCPUStateSet = GetMaxCPUState();
+            _originalMinCPUStateSet = GetMinCPUState();
+
+            //TODO We want this to be the minimum threshold of the Max CPU state allowed.
+            //SetMinxCPUState(5);
         }
 
         public bool SetMaxCPUState(int cpuState)
         {
-            if (cpuState <= 0 || cpuState > 100)
-                throw new ArgumentException(nameof(cpuState));
-
             if (_lastMaxCPUStateSet == cpuState)
                 return true;
 
-            IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
-
-            if (_powerType.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, cpuState) != ReturnCodes.ERROR_SUCCESS)
-                return false;
-
-            if (_powerType.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, cpuState) != ReturnCodes.ERROR_SUCCESS)
-                return false;
-
-            bool result = PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
-
-            if (result)
+            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM))
+            {
                 _lastMaxCPUStateSet = cpuState;
+                return true;
+            }
 
-            return result;
+            return false;
+        }
+
+        public bool SetMinCPUState(int cpuState)
+        {
+            if (_lastMinCPUStateSet == cpuState)
+                return true;
+
+            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MINIMUM))
+            {
+                _lastMinCPUStateSet = cpuState;
+                return true;
+            }
+
+            return false;
         }
 
         public int GetMaxCPUState()
@@ -106,7 +117,32 @@ namespace CpuTempClockerLib.Models
             activeSchemeGuidHandleSafe.Close();
             return result;            
         }
-        
+
+        private bool SetCPUStateInternal(int cpuState, Guid powerSettingGuid)
+        {
+            if (cpuState <= 0 || cpuState > 100)
+                throw new ArgumentException(nameof(cpuState));
+
+            IntPtr guidHandleDangerous = _guidHandleSafe.DangerousGetHandle();
+
+            if (_guidHandleSafe.IsClosed || _guidHandleSafe.IsInvalid)
+                throw new InvalidOperationException("Power Scheme handle is invalid");
+
+            if (_powerType.HasFlag(PowerType.AC) && PowrProf.PowerWriteACValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref powerSettingGuid, cpuState) != ReturnCodes.ERROR_SUCCESS)
+                return false;
+
+            if (_powerType.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref powerSettingGuid, cpuState) != ReturnCodes.ERROR_SUCCESS)
+                return false;
+
+            return PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
+        }
+
+        public void ResetCPUStates()
+        {
+            SetMaxCPUState(_originalMaxCPUStateSet);
+            SetMinCPUState(_originalMinCPUStateSet);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -120,8 +156,8 @@ namespace CpuTempClockerLib.Models
 
             if (disposing)
             {
+                ResetCPUStates();
                 _guidHandleSafe.Dispose();
-                SetMaxCPUState(_originalCPUStateSet);
             }
 
             _disposed = true;

@@ -12,6 +12,7 @@ using CpuTempClockerLib.Enums;
 using CpuTempClockerLib.NativeWappers;
 using CpuTempClockerLib.PowerModes;
 using CpuTempClockerLib.Factories;
+using System.Drawing;
 
 namespace CpuTempClockerLib.UI
 {
@@ -20,29 +21,23 @@ namespace CpuTempClockerLib.UI
         private ProcessorStatePowerMode _processorStatePowerMode;
         private TemperatureTargetedPowerMode _temperatureTargetedPowerMode;
         private CPUSensorCollection _cpuSensorCollection;
-        private readonly Func<Action>[] _tabActivationActions;
+        private UserInteractionHandler _notifyIconHandler;
+        private Func<Action>[] _tabActivationActions;
         private Action _onDectivateTabFunc;
         private bool _hasInitialized;
         private bool _isExiting;
 
         // Todo
         // Get the current max CPU setting to display in slider
-        // On start operation, set the min CPU to 5 then restore on exit.
 
         public MainForm()
         {
             InitializeComponent();
-            _tabActivationActions = new Func<Action>[] { OnProcessorStateTabActivate, OnTemperatureTargetedTabTabActivate };
+            SetupTabActivationsActions();
             SubscribeToPowerSchemeChanges(Handle);
             SetupPeriodicInformationPanel();
+            SetupNotifyIcon();
             _hasInitialized = true;
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            _isExiting = true;
-            _onDectivateTabFunc();
-            base.OnFormClosing(e);
         }
 
         protected override void WndProc(ref Message m)
@@ -58,13 +53,36 @@ namespace CpuTempClockerLib.UI
             base.WndProc(ref m);
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if(!_isExiting)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
+            base.OnFormClosing(e);
+        }
+
+        internal void OnApplicationExit()
+        {
+            _isExiting = true;
+            _onDectivateTabFunc();
+            Application.Exit();
+        }
+
         private void OnPowerSettingChanged()
         {
             if (_hasInitialized)
             {
-                MessageBox.Show($"Power settings have been changed. Any custom power mode has been de-activated. Re-apply any power settings.", "Power Settings", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1);
+                
+                _notifyIconHandler.OnPowerSettingChanged();
             }
             DisposePowerModeAndActivateTab(PowerModeTabPages.SelectedIndex);
+        }
+
+        private void SubscribeToPowerSchemeChanges(IntPtr hwnd)
+        {
+            User32NativeWrapper.SubscribeToPowerSchemeChange(hwnd);
         }
 
         private void SetupPeriodicInformationPanel()
@@ -80,9 +98,14 @@ namespace CpuTempClockerLib.UI
             timer.Start();
         }
 
-        private void SubscribeToPowerSchemeChanges(IntPtr hwnd)
+        private void SetupNotifyIcon()
         {
-            User32NativeWrapper.SubscribeToPowerSchemeChange(hwnd);
+            _notifyIconHandler = new UserInteractionHandler(this);
+        }
+
+        private void SetupTabActivationsActions()
+        {
+            _tabActivationActions = new Func<Action>[] { OnProcessorStateTabActivate, OnTemperatureTargetedTabTabActivate };
         }
 
         private void BtnSetMaxCPUState_Click(object sender, EventArgs e)
@@ -117,7 +140,6 @@ namespace CpuTempClockerLib.UI
         private void DisableTemperatureTargetedPowerMode()
         {
             _temperatureTargetedPowerMode.Stop();
-            _temperatureTargetedPowerMode.ResetCPUStates();
             btnSetTargetCPUState.Text = "Start";
         }
 

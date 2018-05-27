@@ -9,8 +9,8 @@ namespace CpuTempClockerLib.PowerModes
 {
     public class TemperatureTargetedPowerMode : ProcessorStatePowerMode
     {
-        private readonly CPUReading _previousReading;
-        private readonly CPUReading _currentReading;
+        private CPUReading _previousReading;
+        private CPUReading _currentReading;
         private readonly CPUSensorCollection _sensorCollection;
 
         private readonly Timer _timer;
@@ -39,6 +39,10 @@ namespace CpuTempClockerLib.PowerModes
         public void Stop()
         {
             _timer.Stop();
+            _previousReading = new CPUReading();
+            _currentReading = new CPUReading();
+            ResetCPUStates();
+            _onTick(_powerScheme.GetMaxCPUState());
         }
 
         public bool IsRunning()

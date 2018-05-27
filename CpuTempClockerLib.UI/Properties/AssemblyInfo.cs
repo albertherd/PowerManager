@@ -1,16 +1,17 @@
-﻿using System.Reflection;
+﻿using CpuTempClockerLib.UI;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CpuTempClockerLib.UI")]
+[assembly: AssemblyTitle(Constants.ProductName)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CpuTempClockerLib.UI")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyProduct(Constants.ProductName)]
+[assembly: AssemblyCopyright("Copyright © Albert Herd  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

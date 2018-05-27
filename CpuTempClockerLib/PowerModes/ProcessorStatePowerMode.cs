@@ -35,10 +35,6 @@ namespace CpuTempClockerLib.PowerModes
 
         public void ResetCPUStates()
         {
-            // We re-fetch the power scheme since this will be called when power scheme changes.
-            //PowerScheme activePowerScheme = PowerSchemesFactory.GetActivePowerScheme();
-            //activePowerScheme.SetMaxCPUState(_originalMaxCPUStateSet);
-            //activePowerScheme.SetMinCPUState(_originalMinCPUStateSet);
             _powerScheme.ResetCPUStates();
         }
 

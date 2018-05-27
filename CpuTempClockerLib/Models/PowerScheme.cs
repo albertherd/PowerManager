@@ -9,8 +9,10 @@ namespace CpuTempClockerLib.Models
     public class PowerScheme : IDisposable
     {
         private static Guid GUID_PROCESSOR_SETTINGS_SUBGROUP = Guid.Parse("54533251-82BE-4824-96C1-47B60B740D00");
+        private int _minimumProcessorState = 5;
 
         private bool _disposed = false;
+        private bool _hasMaxCPUSateBeenUsedAtLeastOnce = false;
         private SafeHeapHandle<Guid> _guidHandleSafe;
 
         private int _lastMaxCPUStateSet;
@@ -34,17 +36,20 @@ namespace CpuTempClockerLib.Models
             _powerType = SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online ? PowerType.AC : PowerType.DC;
             _originalMaxCPUStateSet = GetMaxCPUState();
             _originalMinCPUStateSet = GetMinCPUState();
-
-            //TODO We want this to be the minimum threshold of the Max CPU state allowed.
-            //SetMinxCPUState(5);
         }
 
-        public bool SetMaxCPUState(int cpuState)
+        public bool SetMaxCPUState(int cpuState, bool setActiveScheme = true)
         {
             if (_lastMaxCPUStateSet == cpuState)
                 return true;
 
-            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM))
+            if (!_hasMaxCPUSateBeenUsedAtLeastOnce && !SetCPUStateInternal(_minimumProcessorState, User32.GUID_PROCESSOR_THROTTLE_MINIMUM, false))
+            {
+                _hasMaxCPUSateBeenUsedAtLeastOnce = true;
+                return false;
+            }
+
+            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MAXIMUM, setActiveScheme))
             {
                 _lastMaxCPUStateSet = cpuState;
                 return true;
@@ -53,12 +58,12 @@ namespace CpuTempClockerLib.Models
             return false;
         }
 
-        public bool SetMinCPUState(int cpuState)
+        public bool SetMinCPUState(int cpuState, bool setActiveScheme = true)
         {
             if (_lastMinCPUStateSet == cpuState)
                 return true;
 
-            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MINIMUM))
+            if (SetCPUStateInternal(cpuState, User32.GUID_PROCESSOR_THROTTLE_MINIMUM, setActiveScheme))
             {
                 _lastMinCPUStateSet = cpuState;
                 return true;
@@ -118,7 +123,7 @@ namespace CpuTempClockerLib.Models
             return result;            
         }
 
-        private bool SetCPUStateInternal(int cpuState, Guid powerSettingGuid)
+        private bool SetCPUStateInternal(int cpuState, Guid powerSettingGuid, bool setActiveScheme)
         {
             if (cpuState <= 0 || cpuState > 100)
                 throw new ArgumentException(nameof(cpuState));
@@ -134,13 +139,16 @@ namespace CpuTempClockerLib.Models
             if (_powerType.HasFlag(PowerType.DC) && PowrProf.PowerWriteDCValueIndex(IntPtr.Zero, guidHandleDangerous, ref GUID_PROCESSOR_SETTINGS_SUBGROUP, ref powerSettingGuid, cpuState) != ReturnCodes.ERROR_SUCCESS)
                 return false;
 
+            if (!setActiveScheme)
+                return true;
+
             return PowrProf.PowerSetActiveScheme(IntPtr.Zero, guidHandleDangerous) == ReturnCodes.ERROR_SUCCESS;
         }
 
         public void ResetCPUStates()
         {
-            SetMaxCPUState(_originalMaxCPUStateSet);
-            SetMinCPUState(_originalMinCPUStateSet);
+            SetMaxCPUState(_originalMaxCPUStateSet, false);
+            SetMinCPUState(_originalMinCPUStateSet, false);
         }
 
         public void Dispose()

@@ -73,8 +73,7 @@ namespace CpuTempClockerLib.UI
         private void OnPowerSettingChanged()
         {
             if (_hasInitialized)
-            {
-                
+            {                
                 _notifyIconHandler.OnPowerSettingChanged();
             }
             DisposePowerModeAndActivateTab(PowerModeTabPages.SelectedIndex);
@@ -135,12 +134,16 @@ namespace CpuTempClockerLib.UI
                 lblCurrentMaxCPUUsagePercentage.Text = $"{state}%";
             });
             btnSetTargetCPUState.Text = "Stop";
+            TargetCpuTemperatureNumericUpDown.Enabled = false;
+            cpuUsageTargetModeTabPage.Enabled = false;
         }
 
         private void DisableTemperatureTargetedPowerMode()
         {
             _temperatureTargetedPowerMode.Stop();
             btnSetTargetCPUState.Text = "Start";
+            TargetCpuTemperatureNumericUpDown.Enabled = true;
+            cpuUsageTargetModeTabPage.Enabled = true;
         }
 
         private void TemperatureTargetModeTabPage_Selected(object sender, TabControlEventArgs e)
@@ -179,6 +182,11 @@ namespace CpuTempClockerLib.UI
         private void OnTemperatureTargetedTabDeActivate()
         {
             _temperatureTargetedPowerMode.Dispose();
+        }
+
+        private void powerSettingsGroupBox_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

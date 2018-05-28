@@ -38,21 +38,19 @@
             this.maxCpuUsageNumeric = new System.Windows.Forms.NumericUpDown();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.powerSettingsGroupBox = new System.Windows.Forms.GroupBox();
-            this.btnSetTargetCPUState = new System.Windows.Forms.Button();
-            this.TemperatureTabDisableableControls = new System.Windows.Forms.Panel();
+            this.TargetCpuTemperatureNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.TargetCpuTemperature = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblCurrentMaxCPUUsagePercentage = new System.Windows.Forms.Label();
             this.cpuPackageTemperatureLabelValue = new System.Windows.Forms.Label();
             this.cpuPackageTemperatureLabel = new System.Windows.Forms.Label();
-            this.TargetCpuTemperatureNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.TargetCpuTemperature = new System.Windows.Forms.Label();
+            this.btnSetTargetCPUState = new System.Windows.Forms.Button();
             this.PowerModeTabPages.SuspendLayout();
             this.cpuUsageTargetModeTabPage.SuspendLayout();
             this.cpuUsageGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumeric)).BeginInit();
             this.tabPage1.SuspendLayout();
             this.powerSettingsGroupBox.SuspendLayout();
-            this.TemperatureTabDisableableControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TargetCpuTemperatureNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -95,7 +93,7 @@
             // 
             this.persistUsageAfterExitingCheckBox.AutoSize = true;
             this.persistUsageAfterExitingCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.persistUsageAfterExitingCheckBox.Location = new System.Drawing.Point(6, 49);
+            this.persistUsageAfterExitingCheckBox.Location = new System.Drawing.Point(6, 50);
             this.persistUsageAfterExitingCheckBox.Name = "persistUsageAfterExitingCheckBox";
             this.persistUsageAfterExitingCheckBox.Size = new System.Drawing.Size(146, 17);
             this.persistUsageAfterExitingCheckBox.TabIndex = 5;
@@ -146,75 +144,24 @@
             // 
             // powerSettingsGroupBox
             // 
+            this.powerSettingsGroupBox.Controls.Add(this.TargetCpuTemperatureNumericUpDown);
+            this.powerSettingsGroupBox.Controls.Add(this.TargetCpuTemperature);
+            this.powerSettingsGroupBox.Controls.Add(this.label1);
+            this.powerSettingsGroupBox.Controls.Add(this.lblCurrentMaxCPUUsagePercentage);
+            this.powerSettingsGroupBox.Controls.Add(this.cpuPackageTemperatureLabelValue);
+            this.powerSettingsGroupBox.Controls.Add(this.cpuPackageTemperatureLabel);
             this.powerSettingsGroupBox.Controls.Add(this.btnSetTargetCPUState);
-            this.powerSettingsGroupBox.Controls.Add(this.TemperatureTabDisableableControls);
             this.powerSettingsGroupBox.Location = new System.Drawing.Point(6, 6);
             this.powerSettingsGroupBox.Name = "powerSettingsGroupBox";
             this.powerSettingsGroupBox.Size = new System.Drawing.Size(275, 135);
             this.powerSettingsGroupBox.TabIndex = 2;
             this.powerSettingsGroupBox.TabStop = false;
             this.powerSettingsGroupBox.Text = "Temperature Target Mode";
-            // 
-            // btnSetTargetCPUState
-            // 
-            this.btnSetTargetCPUState.Location = new System.Drawing.Point(194, 106);
-            this.btnSetTargetCPUState.Name = "btnSetTargetCPUState";
-            this.btnSetTargetCPUState.Size = new System.Drawing.Size(75, 23);
-            this.btnSetTargetCPUState.TabIndex = 1;
-            this.btnSetTargetCPUState.Text = "Start";
-            this.btnSetTargetCPUState.UseVisualStyleBackColor = true;
-            this.btnSetTargetCPUState.Click += new System.EventHandler(this.BtnSetTargetCPUState_Click);
-            // 
-            // TemperatureTabDisableableControls
-            // 
-            this.TemperatureTabDisableableControls.Controls.Add(this.label1);
-            this.TemperatureTabDisableableControls.Controls.Add(this.lblCurrentMaxCPUUsagePercentage);
-            this.TemperatureTabDisableableControls.Controls.Add(this.cpuPackageTemperatureLabelValue);
-            this.TemperatureTabDisableableControls.Controls.Add(this.cpuPackageTemperatureLabel);
-            this.TemperatureTabDisableableControls.Controls.Add(this.TargetCpuTemperatureNumericUpDown);
-            this.TemperatureTabDisableableControls.Controls.Add(this.TargetCpuTemperature);
-            this.TemperatureTabDisableableControls.Location = new System.Drawing.Point(6, 19);
-            this.TemperatureTabDisableableControls.Name = "TemperatureTabDisableableControls";
-            this.TemperatureTabDisableableControls.Size = new System.Drawing.Size(263, 81);
-            this.TemperatureTabDisableableControls.TabIndex = 6;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 55);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(126, 13);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Current Max CPU Usage:";
-            // 
-            // lblCurrentMaxCPUUsagePercentage
-            // 
-            this.lblCurrentMaxCPUUsagePercentage.AutoSize = true;
-            this.lblCurrentMaxCPUUsagePercentage.Location = new System.Drawing.Point(157, 57);
-            this.lblCurrentMaxCPUUsagePercentage.Name = "lblCurrentMaxCPUUsagePercentage";
-            this.lblCurrentMaxCPUUsagePercentage.Size = new System.Drawing.Size(0, 13);
-            this.lblCurrentMaxCPUUsagePercentage.TabIndex = 11;
-            // 
-            // cpuPackageTemperatureLabelValue
-            // 
-            this.cpuPackageTemperatureLabelValue.AutoSize = true;
-            this.cpuPackageTemperatureLabelValue.Location = new System.Drawing.Point(157, 32);
-            this.cpuPackageTemperatureLabelValue.Name = "cpuPackageTemperatureLabelValue";
-            this.cpuPackageTemperatureLabelValue.Size = new System.Drawing.Size(0, 13);
-            this.cpuPackageTemperatureLabelValue.TabIndex = 8;
-            // 
-            // cpuPackageTemperatureLabel
-            // 
-            this.cpuPackageTemperatureLabel.AutoSize = true;
-            this.cpuPackageTemperatureLabel.Location = new System.Drawing.Point(3, 30);
-            this.cpuPackageTemperatureLabel.Name = "cpuPackageTemperatureLabel";
-            this.cpuPackageTemperatureLabel.Size = new System.Drawing.Size(141, 13);
-            this.cpuPackageTemperatureLabel.TabIndex = 6;
-            this.cpuPackageTemperatureLabel.Text = "CPU Package Temperature:";
+            this.powerSettingsGroupBox.Enter += new System.EventHandler(this.powerSettingsGroupBox_Enter);
             // 
             // TargetCpuTemperatureNumericUpDown
             // 
-            this.TargetCpuTemperatureNumericUpDown.Location = new System.Drawing.Point(135, 1);
+            this.TargetCpuTemperatureNumericUpDown.Location = new System.Drawing.Point(138, 23);
             this.TargetCpuTemperatureNumericUpDown.Name = "TargetCpuTemperatureNumericUpDown";
             this.TargetCpuTemperatureNumericUpDown.Size = new System.Drawing.Size(44, 20);
             this.TargetCpuTemperatureNumericUpDown.TabIndex = 10;
@@ -227,11 +174,55 @@
             // TargetCpuTemperature
             // 
             this.TargetCpuTemperature.AutoSize = true;
-            this.TargetCpuTemperature.Location = new System.Drawing.Point(2, 5);
+            this.TargetCpuTemperature.Location = new System.Drawing.Point(6, 25);
             this.TargetCpuTemperature.Name = "TargetCpuTemperature";
             this.TargetCpuTemperature.Size = new System.Drawing.Size(126, 13);
             this.TargetCpuTemperature.TabIndex = 7;
             this.TargetCpuTemperature.Text = "Target CPU Temperature";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 75);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(126, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Current Max CPU Usage:";
+            // 
+            // lblCurrentMaxCPUUsagePercentage
+            // 
+            this.lblCurrentMaxCPUUsagePercentage.AutoSize = true;
+            this.lblCurrentMaxCPUUsagePercentage.Location = new System.Drawing.Point(162, 75);
+            this.lblCurrentMaxCPUUsagePercentage.Name = "lblCurrentMaxCPUUsagePercentage";
+            this.lblCurrentMaxCPUUsagePercentage.Size = new System.Drawing.Size(0, 13);
+            this.lblCurrentMaxCPUUsagePercentage.TabIndex = 15;
+            // 
+            // cpuPackageTemperatureLabelValue
+            // 
+            this.cpuPackageTemperatureLabelValue.AutoSize = true;
+            this.cpuPackageTemperatureLabelValue.Location = new System.Drawing.Point(162, 50);
+            this.cpuPackageTemperatureLabelValue.Name = "cpuPackageTemperatureLabelValue";
+            this.cpuPackageTemperatureLabelValue.Size = new System.Drawing.Size(0, 13);
+            this.cpuPackageTemperatureLabelValue.TabIndex = 13;
+            // 
+            // cpuPackageTemperatureLabel
+            // 
+            this.cpuPackageTemperatureLabel.AutoSize = true;
+            this.cpuPackageTemperatureLabel.Location = new System.Drawing.Point(6, 50);
+            this.cpuPackageTemperatureLabel.Name = "cpuPackageTemperatureLabel";
+            this.cpuPackageTemperatureLabel.Size = new System.Drawing.Size(141, 13);
+            this.cpuPackageTemperatureLabel.TabIndex = 12;
+            this.cpuPackageTemperatureLabel.Text = "CPU Package Temperature:";
+            // 
+            // btnSetTargetCPUState
+            // 
+            this.btnSetTargetCPUState.Location = new System.Drawing.Point(194, 106);
+            this.btnSetTargetCPUState.Name = "btnSetTargetCPUState";
+            this.btnSetTargetCPUState.Size = new System.Drawing.Size(75, 23);
+            this.btnSetTargetCPUState.TabIndex = 1;
+            this.btnSetTargetCPUState.Text = "Start";
+            this.btnSetTargetCPUState.UseVisualStyleBackColor = true;
+            this.btnSetTargetCPUState.Click += new System.EventHandler(this.BtnSetTargetCPUState_Click);
             // 
             // MainForm
             // 
@@ -249,8 +240,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.maxCpuUsageNumeric)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.powerSettingsGroupBox.ResumeLayout(false);
-            this.TemperatureTabDisableableControls.ResumeLayout(false);
-            this.TemperatureTabDisableableControls.PerformLayout();
+            this.powerSettingsGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TargetCpuTemperatureNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
@@ -268,13 +258,12 @@
         private System.Windows.Forms.GroupBox powerSettingsGroupBox;
         private System.Windows.Forms.Button btnSetTargetCPUState;
         private System.Windows.Forms.CheckBox persistUsageAfterExitingCheckBox;
-        private System.Windows.Forms.Panel TemperatureTabDisableableControls;
+        private System.Windows.Forms.NumericUpDown TargetCpuTemperatureNumericUpDown;
+        private System.Windows.Forms.Label TargetCpuTemperature;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCurrentMaxCPUUsagePercentage;
         private System.Windows.Forms.Label cpuPackageTemperatureLabelValue;
         private System.Windows.Forms.Label cpuPackageTemperatureLabel;
-        private System.Windows.Forms.NumericUpDown TargetCpuTemperatureNumericUpDown;
-        private System.Windows.Forms.Label TargetCpuTemperature;
     }
 }
 
